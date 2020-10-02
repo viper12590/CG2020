@@ -1,0 +1,24 @@
+We have tried to use a programming environment that is agnostic to the underlying architecture and operating system (so it should be _fairly_ straight-forward to get running on most machines !) We will test and mark assignment on the lab machines so you should not use any platform-specific features.  If you use an IDE (Visual Studio, Eclipse, XCode etc) make sure that your project compiles without it (i.e. by providing a Make file that works on the lab machines).
+
+Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system's package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on you package manager. Here are some likely candidates for a range of different package managers:
+```
+apt install libsdl2-dev
+rpm -i SDL2-devel
+yum install SDL2-devel
+brew install sdl2
+port install libsdl2
+```
+
+If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online.  
+Good luck with that.
+
+Once you have SDL2 installed, you will need to make sure that you include the SDL2 header file in your code with:
+```
+#include <SDL2/SDL.h>
+```
+Or on some platforms:
+```
+#include <SDL.h>
+```
+
+Note: The code template comes bundled with the GLM library built-in, so there is no need for you to install this !

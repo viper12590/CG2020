@@ -154,5 +154,6 @@ For these reasons, it is **ESSENTIAL** that you keep a logbook of progress that 
 To minimise the overhead in keeping this logbook, you are only required to capture a single screenshot each week.
 Try to capture something that summarises the progress that you have made and upload this onto the
 [logbook submission area on blackboard](https://www.ole.bris.ac.uk/webapps/assignment/uploadAssignment?content_id=_4837989_1&course_id=_240795_1&group_id=&mode=cpview).
+(Note: you might have to log into blackboard _first_ before your click on this link !).
 It is important that **EVERYBODY** uploads an image (so we can be sure that everyone is engaging with the unit).
 If you don't keep your logbook up to date then you'll find us getting in touch to see if everything is OK !

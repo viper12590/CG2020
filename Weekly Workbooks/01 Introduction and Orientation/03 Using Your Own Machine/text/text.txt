@@ -1,6 +1,6 @@
 We have tried to use a programming environment that is agnostic to the underlying architecture and operating system (so it should be _fairly_ straight-forward to get running on most machines !) We will test and mark assignment on the lab machines so you should not use any platform-specific features.  If you use an IDE (Visual Studio, Eclipse, XCode etc) make sure that your project compiles without it (i.e. by providing a Make file that works on the lab machines).
 
-Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system's package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on you package manager. Here are some likely candidates for a range of different package managers:
+Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system's package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on your package manager. Here are some likely candidates for a range of different package managers:
 ```
 apt install libsdl2-dev
 rpm -i SDL2-devel

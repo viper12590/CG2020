@@ -1,7 +1,7 @@
 The implementation language for this unit will be C/C++. Everybody will have their own preferred language for writing code, however C/C++ is very much the standard for low-level graphics rendering applications. If we didn't use this as the primary language for this unit, potential employers would think it very unusual.
 
 The aim of this unit is to develop a fundamental understanding of graphics rendering and as such, we will not be making use of any existing rendering frameworks (but rather, building our own !) That said, the practical exercises will make use of the following two external libraries:
-- [GLM](http://glm.g-truc.net) for general purpose mathematical operations (mostly for manipulating matrices)
+- [GLM](http://glm.g-truc.net) for general purpose mathematical operations (mostly for manipulating vectors and matrices)
 - [SDL2](http://www.libsdl.org) for drawing to the screen (mostly setting the colour of individual pixels !)
 
 Remember: The aim of this unit is to learn to build things from the ground-up, so don't use anything other than SDL2 and GLM when implementing the practical exercises.  

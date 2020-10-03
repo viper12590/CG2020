@@ -16,7 +16,7 @@ Make sure you have watched the "Weekly Briefing" video above before commencing t
 The implementation language for this unit will be C/C++. Everybody will have their own preferred language for writing code, however C/C++ is very much the standard for low-level graphics rendering applications. If we didn't use this as the primary language for this unit, potential employers would think it very unusual.
 
 The aim of this unit is to develop a fundamental understanding of graphics rendering and as such, we will not be making use of any existing rendering frameworks (but rather, building our own !) That said, the practical exercises will make use of the following two external libraries:
-- [GLM](http://glm.g-truc.net) for general purpose mathematical operations (mostly for manipulating matrices)
+- [GLM](http://glm.g-truc.net) for general purpose mathematical operations (mostly for manipulating vectors and matrices)
 - [SDL2](http://www.libsdl.org) for drawing to the screen (mostly setting the colour of individual pixels !)
 
 Remember: The aim of this unit is to learn to build things from the ground-up, so don't use anything other than SDL2 and GLM when implementing the practical exercises.  
@@ -43,7 +43,7 @@ In order to make things a little tidier, we have provided a "wrapper" object aro
 
 We have tried to use a programming environment that is agnostic to the underlying architecture and operating system (so it should be _fairly_ straight-forward to get running on most machines !) We will test and mark assignment on the lab machines so you should not use any platform-specific features.  If you use an IDE (Visual Studio, Eclipse, XCode etc) make sure that your project compiles without it (i.e. by providing a Make file that works on the lab machines).
 
-Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system's package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on you package manager. Here are some likely candidates for a range of different package managers:
+Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system's package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on your package manager. Here are some likely candidates for a range of different package managers:
 ```
 apt install libsdl2-dev
 rpm -i SDL2-devel
@@ -80,7 +80,7 @@ Note: If using a virtual machine, you should avoid using display scaling (i.e. r
 ### Task 4: Using the Lab Machines
 
 
-As an alternative to getting SDL2 installed on your own computer, you might choose to compile and run your code remotely on a lab machine. In order to gain remote access (including remote viewing of graphics) you will need to use X2Go. Full instructions for installing and running the X2Go client can be found in <a href="https://uob.sharepoint.com/sites/itservices/SitePages/fits-engineering-linux-x2go.aspx" target="_blank">this how-to guide</a>. The quality of your experience using this approach to development will vary depending on the quality of your internet connection.
+As an alternative to getting SDL2 installed on your own computer, you might choose to compile and run your code remotely on a lab machine. In order to gain remote access (including remote viewing of graphics) you will need to use _X2Go_. Full instructions for installing and running the _X2Go_ client can be found in <a href="https://uob.sharepoint.com/sites/itservices/SitePages/fits-engineering-linux-x2go.aspx" target="_blank">this how-to guide</a>. It is worth noting however that the quality of your experience using this approach to development will vary depending on the quality of your internet connection.
 
 
    
@@ -99,16 +99,17 @@ in particular the rapid response teaching support helpline !
 ### Task 5: The Template Project
 
 
-In order to help get you started, we have provided a sample project called <a href="../../RedNoise/" target="_blank">RedNoise</a>. This project provides the structure that you will need for each weekly workbook, as well as illustrating the use of the _DrawingWindow_ methods. You should use this template as a starting point for each practical exercise. Do be sure to change the name of the project (you don't want to have a bunch of projects all called _RedNoise_ !). Make sure you update the `PROJECT_NAME` on the first line of the Makefile to match the name of your project/main class.
+In order to help get you started, we have provided a sample project called <a href="../../RedNoise/" target="_blank">RedNoise</a>. This project provides the structure that you will need for each weekly workbook, as well as illustrating the use of the _DrawingWindow_ methods. You should use this template as a starting point for each practical exercise. Do be sure to change the name of the project (you don't want to have a bunch of projects all called _RedNoise_ !).
 
-In order to help you compile, link and run your code, a Makefile has been provided as part of the template project. This Makefile has multiple build rules for different purposes:
-- diagnostic: A development build rule that includes extra checking and diagnosis flags.  
-Note: this rule requires the [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) library to be installed (which comes built-in with some C++ compilers)
+In order to help you compile, link and run your code, a Makefile has been provided as part of the template project. Be sure you update the `PROJECT_NAME` on the first line of the Makefile to match the name of your project/main class each week. This Makefile has multiple build rules for different purposes:
+
 - debug: A development build rule that will compile and link your project for use with a debugger (gdb)
+- diagnostic: A development build rule that includes extra memory checking and diagnosis flags.  
+Note: this rule requires the [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) library to be installed (which comes built-in with some C++ compilers)
 - speedy: A build rule that will result in a high performance executable (to make interaction testing quicker)
-- production: A build rule to make an executable (without debug hooks) for release or distribution
+- production: A build rule to make an executable without debug hooks (for release or distribution)
 
-Just typing `make` on its own will build the _diagnostic_ rule and run the resultant executable.  
+Just typing `make` on its own will build the _debug_ rule and run the resultant executable.  
 
 When you successfully build and run the _RedNoise_ project you should see a window that looks like the following...  
 
@@ -122,9 +123,7 @@ A _CMake_ build file `CMakeList.txt` is also included in the _RedNoise_ project 
 
 On some platforms you may need to include `<cstring>` in the DrawingWindow class (if the compiler complains that it can't find `memset`).
 
-The cleanest way to quit an SDL application is by pressing the ESC key !
-
-If you have a window that you can't close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.  
+The cleanest way to quit an SDL application is by pressing the ESC key ! If you have a window that you can't close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.  
 
 
 # 

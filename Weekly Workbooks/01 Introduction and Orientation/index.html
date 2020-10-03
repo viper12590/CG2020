@@ -29,7 +29,7 @@
 <h1 id="section"></h1>
 <h3 id="task-2-language-and-libraries">Task 2: Language and Libraries</h3>
 <p>The implementation language for this unit will be C/C++. Everybody will have their own preferred language for writing code, however C/C++ is very much the standard for low-level graphics rendering applications. If we didn’t use this as the primary language for this unit, potential employers would think it very unusual.</p>
-<p>The aim of this unit is to develop a fundamental understanding of graphics rendering and as such, we will not be making use of any existing rendering frameworks (but rather, building our own !) That said, the practical exercises will make use of the following two external libraries: - <a href="http://glm.g-truc.net">GLM</a> for general purpose mathematical operations (mostly for manipulating matrices) - <a href="http://www.libsdl.org">SDL2</a> for drawing to the screen (mostly setting the colour of individual pixels !)</p>
+<p>The aim of this unit is to develop a fundamental understanding of graphics rendering and as such, we will not be making use of any existing rendering frameworks (but rather, building our own !) That said, the practical exercises will make use of the following two external libraries: - <a href="http://glm.g-truc.net">GLM</a> for general purpose mathematical operations (mostly for manipulating vectors and matrices) - <a href="http://www.libsdl.org">SDL2</a> for drawing to the screen (mostly setting the colour of individual pixels !)</p>
 <p>Remember: The aim of this unit is to learn to build things from the ground-up, so don’t use anything other than SDL2 and GLM when implementing the practical exercises.</p>
 <p>In order to make things a little tidier, we have provided a “wrapper” object around SDL2 called <em>DrawingWindow</em> . This wrapper initialises SDL, opens up a window for drawing to the screen and then provides various methods for drawing and interacting with the user. The <em>DrawingWindow</em> object has the following methods:</p>
 <ul>
@@ -50,7 +50,7 @@
 <h1 id="section-1"></h1>
 <h3 id="task-3-using-your-own-machine">Task 3: Using Your Own Machine</h3>
 <p>We have tried to use a programming environment that is agnostic to the underlying architecture and operating system (so it should be <em>fairly</em> straight-forward to get running on most machines !) We will test and mark assignment on the lab machines so you should not use any platform-specific features. If you use an IDE (Visual Studio, Eclipse, XCode etc) make sure that your project compiles without it (i.e. by providing a Make file that works on the lab machines).</p>
-<p>Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system’s package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on you package manager. Here are some likely candidates for a range of different package managers:</p>
+<p>Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system’s package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on your package manager. Here are some likely candidates for a range of different package managers:</p>
 <pre><code>apt install libsdl2-dev
 rpm -i SDL2-devel
 yum install SDL2-devel
@@ -69,23 +69,28 @@ If you are having difficulties installing SDL2 on your existing operating system
 <p>Note: If using a virtual machine, you should avoid using display scaling (i.e. run the linux desktop in full-screen unscaled mode) otherwise you may experience a reduction in window manager performance.</p>
 <h1 id="section-2"></h1>
 <h3 id="task-4-using-the-lab-machines">Task 4: Using the Lab Machines</h3>
-<p>As an alternative to getting SDL2 installed on your own computer, you might choose to compile and run your code remotely on a lab machine. In order to gain remote access (including remote viewing of graphics) you will need to use X2Go. Full instructions for installing and running the X2Go client can be found in <a href="https://uob.sharepoint.com/sites/itservices/SitePages/fits-engineering-linux-x2go.aspx" target="_blank">this how-to guide</a>. The quality of your experience using this approach to development will vary depending on the quality of your internet connection.</p>
+<p>As an alternative to getting SDL2 installed on your own computer, you might choose to compile and run your code remotely on a lab machine. In order to gain remote access (including remote viewing of graphics) you will need to use <em>X2Go</em>. Full instructions for installing and running the <em>X2Go</em> client can be found in <a href="https://uob.sharepoint.com/sites/itservices/SitePages/fits-engineering-linux-x2go.aspx" target="_blank">this how-to guide</a>. It is worth noting however that the quality of your experience using this approach to development will vary depending on the quality of your internet connection.</p>
 <p><strong>Hints &amp; Tips:</strong><br />
 For help resolving problems with remote access to the lab machines, check out the <a href="https://uob.sharepoint.com/sites/itservices/SitePages/contacts.aspx" target="_blank">IT services help page</a> in particular the rapid response teaching support helpline !</p>
 <h1 id="section-3"></h1>
 <h3 id="task-5-the-template-project">Task 5: The Template Project</h3>
-<p>In order to help get you started, we have provided a sample project called <a href="../../RedNoise/" target="_blank">RedNoise</a>. This project provides the structure that you will need for each weekly workbook, as well as illustrating the use of the <em>DrawingWindow</em> methods. You should use this template as a starting point for each practical exercise. Do be sure to change the name of the project (you don’t want to have a bunch of projects all called <em>RedNoise</em> !). Make sure you update the <code>PROJECT_NAME</code> on the first line of the Makefile to match the name of your project/main class.</p>
-<p>In order to help you compile, link and run your code, a Makefile has been provided as part of the template project. This Makefile has multiple build rules for different purposes: - diagnostic: A development build rule that includes extra checking and diagnosis flags.<br />
-Note: this rule requires the <a href="https://clang.llvm.org/docs/AddressSanitizer.html">Address Sanitizer</a> library to be installed (which comes built-in with some C++ compilers) - debug: A development build rule that will compile and link your project for use with a debugger (gdb) - speedy: A build rule that will result in a high performance executable (to make interaction testing quicker) - production: A build rule to make an executable (without debug hooks) for release or distribution</p>
-<p>Just typing <code>make</code> on its own will build the <em>diagnostic</em> rule and run the resultant executable.</p>
+<p>In order to help get you started, we have provided a sample project called <a href="../../RedNoise/" target="_blank">RedNoise</a>. This project provides the structure that you will need for each weekly workbook, as well as illustrating the use of the <em>DrawingWindow</em> methods. You should use this template as a starting point for each practical exercise. Do be sure to change the name of the project (you don’t want to have a bunch of projects all called <em>RedNoise</em> !).</p>
+<p>In order to help you compile, link and run your code, a Makefile has been provided as part of the template project. Be sure you update the <code>PROJECT_NAME</code> on the first line of the Makefile to match the name of your project/main class each week. This Makefile has multiple build rules for different purposes:</p>
+<ul>
+<li>debug: A development build rule that will compile and link your project for use with a debugger (gdb)</li>
+<li>diagnostic: A development build rule that includes extra memory checking and diagnosis flags.<br />
+Note: this rule requires the <a href="https://clang.llvm.org/docs/AddressSanitizer.html">Address Sanitizer</a> library to be installed (which comes built-in with some C++ compilers)</li>
+<li>speedy: A build rule that will result in a high performance executable (to make interaction testing quicker)</li>
+<li>production: A build rule to make an executable without debug hooks (for release or distribution)</li>
+</ul>
+<p>Just typing <code>make</code> on its own will build the <em>debug</em> rule and run the resultant executable.</p>
 <p>When you successfully build and run the <em>RedNoise</em> project you should see a window that looks like the following…</p>
 <p><img src="05%20The%20Template%20Project/images/red-noise.jpg" /></p>
 <p><strong>Hints &amp; Tips:</strong><br />
 Depending on the compiler that you have installed, you may need to edit the Makefile in order to change the compiler used to build the project (currently the project uses <em>clang++</em> but you may wish to change this to <em>g++</em> or <em>cl</em>)</p>
 <p>A <em>CMake</em> build file <code>CMakeList.txt</code> is also included in the <em>RedNoise</em> project (in case you prefer using <em>CMake</em> to <em>Make</em>). Details of how to use <em>CMake</em> are included as comments in the <code>CMakeList.txt</code> file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as <em>CLion</em>.</p>
 <p>On some platforms you may need to include <code>&lt;cstring&gt;</code> in the DrawingWindow class (if the compiler complains that it can’t find <code>memset</code>).</p>
-<p>The cleanest way to quit an SDL application is by pressing the ESC key !</p>
-<p>If you have a window that you can’t close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.</p>
+<p>The cleanest way to quit an SDL application is by pressing the ESC key ! If you have a window that you can’t close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.</p>
 <h1 id="section-4"></h1>
 <h3 id="task-6-understanding-the-template">Task 6: Understanding the Template</h3>
 <p>It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks !</p>

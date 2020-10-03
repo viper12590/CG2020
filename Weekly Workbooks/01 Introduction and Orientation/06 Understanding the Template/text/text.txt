@@ -1,0 +1,11 @@
+It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks !
+
+The main function in the code contains a loop which:
+- Polls the event queue for incoming mouse and keyboard events
+- Updates the position of any moving elements of the scene
+- Draws the scene to the screen memory buffer
+- Renders the memory buffer onto the SDL window
+
+Drawing the scene onto the screen buffer basically involves looping through a pixel at a time, deciding what colour it should be, packing that colour into an ARGB integer and setting the relevant pixel to that colour. The _RedNoise_ example just creates a random pattern of red pixels of varying brightness. This is a good starting point to make sure that the code runs - in later weeks we are going to do more sophisticated things with the pixels !
+
+You will note from the `handleEvent` method that it is possible to respond to both mouse and keyboard events. In the _RedNoise_ example we simply print out messages to the console (by piping strings to the `cout` object). In later weeks we are going to use these event handlers to allow the user to navigate around a scene and switch between different rendering modes.

@@ -1,0 +1,21 @@
+The implementation language for this unit will be C/C++. Everybody will have their own preferred language for writing code, however C/C++ is very much the standard for low-level graphics rendering applications. If we didn't use this as the primary language for this unit, potential employers would think it very unusual.
+
+The aim of this unit is to develop a fundamental understanding of graphics rendering and as such, we will not be making use of any existing rendering frameworks (but rather, building our own !) That said, the practical exercises will make use of the following two external libraries:
+- [GLM](http://glm.g-truc.net) for general purpose mathematical operations (mostly for manipulating matrices)
+- [SDL2](http://www.libsdl.org) for drawing to the screen (mostly setting the colour of individual pixels !)
+
+Remember: The aim of this unit is to learn to build things from the ground-up, so don't use anything other than SDL2 and GLM when implementing the practical exercises.  
+
+In order to make things a little tidier, we have provided a "wrapper" object around SDL2 called _DrawingWindow_ . This wrapper initialises SDL, opens up a window for drawing to the screen and then provides various methods for drawing and interacting with the user. The _DrawingWindow_ object has the following methods:  
+
+- DrawingWindow: A constructor for the drawing window that takes 3 parameters:
+    - Horizontal resolution for the window (integer width)
+    - Vertical resolution for the window (integer height)
+    - Whether or not to show the window in full-screen mode (boolean)
+- setPixelColour: sets an individual pixel (indicated by x and y coordinates) to a specified colour (a packed ARGB value)
+- getPixelColour: returns the colour of the pixel indicated by x and y coordinates
+- renderFrame: draws all pixels to the screen (until you call this, all pixel changes are just in a memory buffer)
+- savePPM: saves the currently rendered content of the window to a .ppm image file
+- saveBMP: saves the currently rendered content of the window to a .bmp image file
+- clearPixels: clears all pixel colours (from the whole window)
+- pollForInputEvents: Checks to see if there are any events waiting to be processed (returns true if there are !)

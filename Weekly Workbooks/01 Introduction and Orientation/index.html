@@ -88,7 +88,7 @@ Note: this rule requires the <a href="https://clang.llvm.org/docs/AddressSanitiz
 <p><img src="05%20The%20Template%20Project/images/red-noise.jpg" /></p>
 <p><strong>Hints &amp; Tips:</strong><br />
 Depending on the compiler that you have installed, you may need to edit the Makefile in order to change the compiler used to build the project (currently the project uses <em>clang++</em> but you may wish to change this to <em>g++</em> or <em>cl</em>)</p>
-<p>A <em>CMake</em> build file <code>CMakeList.txt</code> is also included in the <em>RedNoise</em> project (in case you prefer using <em>CMake</em> to <em>Make</em>). Details of how to use <em>CMake</em> are included as comments in the <code>CMakeList.txt</code> file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as <em>CLion</em>.</p>
+<p>A <em>CMake</em> build file <code>CMakeList.txt</code> is also included in the <em>RedNoise</em> project (in case you prefer using <em>CMake</em> rather than <em>Make</em>). Details of how to use <em>CMake</em> are included as comments in the <code>CMakeList.txt</code> file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as <em>CLion</em>.</p>
 <p>On some platforms you may need to include <code>&lt;cstring&gt;</code> in the DrawingWindow class (if the compiler complains that it can’t find <code>memset</code>).</p>
 <p>The cleanest way to quit an SDL application is by pressing the ESC key ! If you have a window that you can’t close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.</p>
 <h1 id="section-4"></h1>

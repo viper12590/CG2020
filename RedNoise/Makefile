@@ -31,8 +31,6 @@ SDL_COMPILER_FLAGS := $(shell sdl2-config --cflags)
 SDL_LINKER_FLAGS := $(shell sdl2-config --libs)
 SDW_LINKER_FLAGS := $(SDW_OBJECT_FILES)
 
-
-
 default: debug
 
 # Rule to compile and link for use with a debugger (although works fine even if you aren't using a debugger !)
@@ -65,7 +63,6 @@ $(BUILD_DIR)/%.o: $(SDW_DIR)%.cpp
 	@mkdir -p $(BUILD_DIR)
 	$(COMPILER) $(COMPILER_OPTIONS) -c -o $@ $^ $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 
-	
 # Files to remove during clean
 clean:
 	rm $(BUILD_DIR)/*

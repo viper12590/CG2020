@@ -1,4 +1,4 @@
-Depending on the compiler that you have installed, you may need to edit the Makefile in order to change the compiler used to build the project (currently the project uses _clang++_ but you may wish to change this to _g++_ or _cl_)
+Depending on the compiler that you have installed, you may need to edit the _Makefile_ in order to change the compiler used to build the project (currently the project uses `clang++` but you may need to change this to `g++` or `cl`)
 
 A _CMake_ build file `CMakeList.txt` is also included in the _RedNoise_ project (in case you prefer using _CMake_ rather than _Make_). Details of how to use _CMake_ are included as comments in the `CMakeList.txt` file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as _CLion_.
 

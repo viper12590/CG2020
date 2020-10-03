@@ -54,7 +54,7 @@ port install libsdl2
 
 If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the include statement in the DrawingWindow.h file from `"SDL.h"` to `"SDL2/SDL.h"`.
 
-The code template comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !
+The code template (that we will introduce later in this workbook) comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !
   
 
 
@@ -63,7 +63,7 @@ If you are having difficulties installing SDL2 on your existing operating system
 
 Alternatively (if you are confident to do so) it might be worth considering a "fresh" install of your preferred linux distribution. It should be relatively straight-forward to install SDL2 on a clean linux install. You might like to consider dual booting your computer (if you are brave enough !) or alternatively, use a virtual machine (such as VirtualBox) and install linux within.
 
-Note: If using a virtual machine, you should avoid using display scaling (i.e. run the linux desktop in full-screen unscaled mode) otherwise you may experience a reduction in window manager performance.  
+Note: If using a virtual machine, you should avoid using display scaling (i.e. use VirtualBox in 100% "Unscaled Output" mode) otherwise you may experience a reduction in window manager performance.  
 
 
 # 
@@ -107,7 +107,7 @@ When you successfully build and run the _RedNoise_ project you should see a wind
 ![](05%20The%20Template%20Project/images/red-noise.jpg)
 
 **Hints & Tips:**  
-Depending on the compiler that you have installed, you may need to edit the Makefile in order to change the compiler used to build the project (currently the project uses _clang++_ but you may wish to change this to _g++_ or _cl_)
+Depending on the compiler that you have installed, you may need to edit the _Makefile_ in order to change the compiler used to build the project (currently the project uses `clang++` but you may need to change this to `g++` or `cl`)
 
 A _CMake_ build file `CMakeList.txt` is also included in the _RedNoise_ project (in case you prefer using _CMake_ rather than _Make_). Details of how to use _CMake_ are included as comments in the `CMakeList.txt` file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as _CLion_.
 
@@ -120,13 +120,12 @@ The cleanest way to quit an SDL application is by pressing the ESC key ! If you 
 ### Task 6: Understanding the Template
 
 
-It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks !
+It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks. The main function in the code contains a loop which:
 
-The main function in the code contains a loop which:
-- Polls the event queue for incoming mouse and keyboard events
-- Updates the position of any moving elements of the scene
-- Draws the scene to the screen memory buffer
-- Renders the memory buffer onto the SDL window
+1. Polls the event queue for incoming mouse and keyboard events
+2. Updates the position of any moving elements of the scene
+3. Draws the scene to the screen memory buffer
+4. Renders the memory buffer onto the SDL window
 
 Drawing the scene onto the screen buffer basically involves looping through a pixel at a time, deciding what colour it should be, packing that colour into an ARGB integer and setting the relevant pixel to that colour. The _RedNoise_ example just creates a random pattern of red pixels of varying brightness. This is a good starting point to make sure that the code runs - in later weeks we are going to do more sophisticated things with the pixels !
 

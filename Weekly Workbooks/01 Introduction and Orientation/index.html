@@ -57,11 +57,11 @@ yum install SDL2-devel
 brew install sdl2
 port install libsdl2</code></pre>
 <p>If you can’t get your package manager to install SDL2 (or if you don’t have a package manager at all !) then you will have to install the <strong>development libraries</strong> manually from: <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a>. This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the include statement in the DrawingWindow.h file from <code>"SDL.h"</code> to <code>"SDL2/SDL.h"</code>.</p>
-<p>The code template comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !</p>
+<p>The code template (that we will introduce later in this workbook) comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !</p>
 <p><strong>Hints &amp; Tips:</strong><br />
 If you are having difficulties installing SDL2 on your existing operating system, we have created a Vagrant box <a href="Vagrantfile" target="_blank">configuration file</a> that can be used to bring up a virtual machine with all of the required tools and libraries installed. See the comments at the top of the file for instructions on how to get started with Vagrant.</p>
 <p>Alternatively (if you are confident to do so) it might be worth considering a “fresh” install of your preferred linux distribution. It should be relatively straight-forward to install SDL2 on a clean linux install. You might like to consider dual booting your computer (if you are brave enough !) or alternatively, use a virtual machine (such as VirtualBox) and install linux within.</p>
-<p>Note: If using a virtual machine, you should avoid using display scaling (i.e. run the linux desktop in full-screen unscaled mode) otherwise you may experience a reduction in window manager performance.</p>
+<p>Note: If using a virtual machine, you should avoid using display scaling (i.e. use VirtualBox in 100% “Unscaled Output” mode) otherwise you may experience a reduction in window manager performance.</p>
 <h1 id="section-2"></h1>
 <h3 id="task-4-using-the-lab-machines">Task 4: Using the Lab Machines</h3>
 <p>As an alternative to getting SDL2 installed on your own computer, you might choose to compile and run your code remotely on a lab machine. In order to gain remote access (including remote viewing of graphics) you will need to use <em>X2Go</em>. Full instructions for installing and running the <em>X2Go</em> client can be found in <a href="https://uob.sharepoint.com/sites/itservices/SitePages/fits-engineering-linux-x2go.aspx" target="_blank">this how-to guide</a>. It is worth noting however that the quality of your experience using this approach to development will vary depending on the quality of your internet connection.</p>
@@ -82,14 +82,19 @@ Note: this rule requires the <a href="https://clang.llvm.org/docs/AddressSanitiz
 <p>When you successfully build and run the <em>RedNoise</em> project you should see a window that looks like the following…</p>
 <p><img src="05%20The%20Template%20Project/images/red-noise.jpg" /></p>
 <p><strong>Hints &amp; Tips:</strong><br />
-Depending on the compiler that you have installed, you may need to edit the Makefile in order to change the compiler used to build the project (currently the project uses <em>clang++</em> but you may wish to change this to <em>g++</em> or <em>cl</em>)</p>
+Depending on the compiler that you have installed, you may need to edit the <em>Makefile</em> in order to change the compiler used to build the project (currently the project uses <code>clang++</code> but you may need to change this to <code>g++</code> or <code>cl</code>)</p>
 <p>A <em>CMake</em> build file <code>CMakeList.txt</code> is also included in the <em>RedNoise</em> project (in case you prefer using <em>CMake</em> rather than <em>Make</em>). Details of how to use <em>CMake</em> are included as comments in the <code>CMakeList.txt</code> file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as <em>CLion</em>.</p>
 <p>On some platforms you may need to include <code>&lt;cstring&gt;</code> in the DrawingWindow class (if the compiler complains that it can’t find <code>memset</code>).</p>
 <p>The cleanest way to quit an SDL application is by pressing the ESC key ! If you have a window that you can’t close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.</p>
 <h1 id="section-4"></h1>
 <h3 id="task-6-understanding-the-template">Task 6: Understanding the Template</h3>
-<p>It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks !</p>
-<p>The main function in the code contains a loop which: - Polls the event queue for incoming mouse and keyboard events - Updates the position of any moving elements of the scene - Draws the scene to the screen memory buffer - Renders the memory buffer onto the SDL window</p>
+<p>It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks. The main function in the code contains a loop which:</p>
+<ol type="1">
+<li>Polls the event queue for incoming mouse and keyboard events</li>
+<li>Updates the position of any moving elements of the scene</li>
+<li>Draws the scene to the screen memory buffer</li>
+<li>Renders the memory buffer onto the SDL window</li>
+</ol>
 <p>Drawing the scene onto the screen buffer basically involves looping through a pixel at a time, deciding what colour it should be, packing that colour into an ARGB integer and setting the relevant pixel to that colour. The <em>RedNoise</em> example just creates a random pattern of red pixels of varying brightness. This is a good starting point to make sure that the code runs - in later weeks we are going to do more sophisticated things with the pixels !</p>
 <p>You will note from the <code>handleEvent</code> method that it is possible to respond to both mouse and keyboard events. In the <em>RedNoise</em> example we simply print out messages to the console (by piping strings to the <code>cout</code> object). In later weeks we are going to use these event handlers to allow the user to navigate around a scene and switch between different rendering modes.</p>
 <h1 id="section-5"></h1>

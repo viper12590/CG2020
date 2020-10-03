@@ -11,4 +11,4 @@ port install libsdl2
 
 If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the include statement in the DrawingWindow.h file from `"SDL.h"` to `"SDL2/SDL.h"`.
 
-The code template comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !
+The code template (that we will introduce later in this workbook) comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !

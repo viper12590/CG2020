@@ -1,4 +1,0 @@
-As an alternative to getting SDL2 installed on your own computer, you might choose to compile and run your code remotely on a lab machine. In order to gain remote access (including remote viewing of graphics) you will need to use X2Go. Full instructions for installing and running the X2Go client can be found in <a href="https://uob.sharepoint.com/sites/itservices/SitePages/fits-engineering-linux-x2go.aspx" target="_blank">this how-to guide</a>. The quality of your experience using this approach to development will vary depending on the quality of your internet connection.
-
-
- 

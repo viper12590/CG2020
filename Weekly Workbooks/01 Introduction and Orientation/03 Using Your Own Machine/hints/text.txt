@@ -1,5 +1,0 @@
-If you are having difficulties installing SDL2 on your existing operating system, we have created a Vagrant box <a href="Vagrantfile" target="_blank">configuration file</a> that can be used to bring up a virtual machine with all of the required tools and libraries installed. See the comments at the top of the file for instructions on how to get started with Vagrant.
-
-Alternatively (if you are confident to do so) it might be worth considering a "fresh" install of your preferred linux distribution. It should be relatively straight-forward to install SDL2 on a clean linux install. You might like to consider dual booting your computer (if you are brave enough !) or alternatively, use a virtual machine (such as VirtualBox) and install linux within.
-
-Note: If using a virtual machine, you should avoid using display scaling (i.e. run the linux desktop in full-screen unscaled mode) otherwise you may experience a reduction in window manager performance.

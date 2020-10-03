@@ -1,9 +1,0 @@
-Depending on the compiler that you have installed, you may need to edit the Makefile in order to change the compiler used to build the project.
-
-A _CMake_ build file `CMakeList.txt` is also included in the _RedNoise_ project (in case you prefer using _CMake_ to _Make_). Details of how to use _CMake_ are included as comments in the `CMakeList.txt` file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as _CLion_.
-
-On some platforms you may need to include `<cstring>` in the DrawingWindow class (if the compiler complains that it can't find `memset`).
-
-The cleanest way to quit an SDL application is by pressing the ESC key !
-
-If you have a window that you can't close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.

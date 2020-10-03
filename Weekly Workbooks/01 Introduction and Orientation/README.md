@@ -52,19 +52,9 @@ brew install sdl2
 port install libsdl2
 ```
 
-If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online.  
-Good luck with that.
+If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the include statement in the DrawingWindow.h file from `"SDL.h"` to `"SDL2/SDL.h"`.
 
-Once you have SDL2 installed, you will need to make sure that you include the SDL2 header file in your code with:
-```
-#include <SDL2/SDL.h>
-```
-Or on some platforms:
-```
-#include <SDL.h>
-```
-
-Note: The code template comes bundled with the GLM library built-in, so there is no need for you to install this !
+The code template comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !
   
 
 

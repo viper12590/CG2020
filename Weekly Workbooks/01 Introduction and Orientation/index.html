@@ -56,13 +56,8 @@ rpm -i SDL2-devel
 yum install SDL2-devel
 brew install sdl2
 port install libsdl2</code></pre>
-<p>If you can’t get your package manager to install SDL2 (or if you don’t have a package manager at all !) then you will have to install the <strong>development libraries</strong> manually from: <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a>. This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online.<br />
-Good luck with that.</p>
-<p>Once you have SDL2 installed, you will need to make sure that you include the SDL2 header file in your code with:</p>
-<pre><code>#include &lt;SDL2/SDL.h&gt;</code></pre>
-<p>Or on some platforms:</p>
-<pre><code>#include &lt;SDL.h&gt;</code></pre>
-<p>Note: The code template comes bundled with the GLM library built-in, so there is no need for you to install this !</p>
+<p>If you can’t get your package manager to install SDL2 (or if you don’t have a package manager at all !) then you will have to install the <strong>development libraries</strong> manually from: <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a>. This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the include statement in the DrawingWindow.h file from <code>"SDL.h"</code> to <code>"SDL2/SDL.h"</code>.</p>
+<p>The code template comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !</p>
 <p><strong>Hints &amp; Tips:</strong><br />
 If you are having difficulties installing SDL2 on your existing operating system, we have created a Vagrant box <a href="Vagrantfile" target="_blank">configuration file</a> that can be used to bring up a virtual machine with all of the required tools and libraries installed. See the comments at the top of the file for instructions on how to get started with Vagrant.</p>
 <p>Alternatively (if you are confident to do so) it might be worth considering a “fresh” install of your preferred linux distribution. It should be relatively straight-forward to install SDL2 on a clean linux install. You might like to consider dual booting your computer (if you are brave enough !) or alternatively, use a virtual machine (such as VirtualBox) and install linux within.</p>

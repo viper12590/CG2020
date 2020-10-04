@@ -1,4 +1,3 @@
 The aim of this short introductory workbook is to ease everybody gently into the first week of term. The main objective is to make sure that you are able to build and run the code template that you will need to complete this unit. This may take some time and perseverance to achieve (depending on the computer that you intend to use for this unit). It is therefore **ESSENTIAL** that you achieve everything in this workbook during the first week of term. If you are unable to build and run applications, you will find yourself falling behind on this unit.
 
-
-Make sure you have watched the "Weekly Briefing" video above before commencing the remaining tasks in this week's workbook !
+If you didn't make it to the live briefing session earlier in the week, make sure you have watched the "Weekly Briefing" video above before commencing the remaining tasks in this week's workbook !

@@ -1,6 +1,6 @@
 Depending on the compiler that you have installed, you may need to edit the _Makefile_ in order to change the compiler used to build the project (currently the project uses `clang++` but you may need to change this to `g++` or `cl`)
 
-A _CMake_ build file `CMakeList.txt` is also included in the _RedNoise_ project (in case you prefer using _CMake_ rather than _Make_). Details of how to use _CMake_ are included as comments in the `CMakeList.txt` file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as _CLion_.
+A _CMake_ build file <a href="../../RedNoise/CMakeLists.txt" target="_blank">CMakeLists.txt</a> is also included in the _RedNoise_ project (in case you prefer using _CMake_ rather than _Make_). Details of how to use _CMake_ are included as comments in the `CMakeLists.txt` file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as _CLion_.
 
 On some platforms you may need to include `<cstring>` in the DrawingWindow class (if the compiler complains that it can't find `memset`).
 

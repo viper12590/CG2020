@@ -18,4 +18,6 @@ In order to make things a little tidier, we have provided a "wrapper" object aro
 - savePPM: saves the currently rendered content of the window to a .ppm image file
 - saveBMP: saves the currently rendered content of the window to a .bmp image file
 - clearPixels: clears all pixel colours (from the whole window)
-- pollForInputEvents: Checks to see if there are any events waiting to be processed (returns true if there are !)
+- pollForInputEvents: checks to see if there are any events waiting to be processed (returns true if there are !)
+
+Examples of how to call the methods of the DrawingWindow class are included in the template project introduced later in this workbook. 

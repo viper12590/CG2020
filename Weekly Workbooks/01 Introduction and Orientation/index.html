@@ -25,7 +25,7 @@
 <h3 id="weekly-briefing"><a href='https://web.microsoftstream.com/channel/b84051cb-1dba-4cb4-a271-60cc6635f92f' target='_blank'> Weekly Briefing <img src="../../resources/icons/briefing.png" /> </a></h3>
 <h3 id="task-1-introduction">Task 1: Introduction</h3>
 <p>The aim of this short introductory workbook is to ease everybody gently into the first week of term. The main objective is to make sure that you are able to build and run the code template that you will need to complete this unit. This may take some time and perseverance to achieve (depending on the computer that you intend to use for this unit). It is therefore <strong>ESSENTIAL</strong> that you achieve everything in this workbook during the first week of term. If you are unable to build and run applications, you will find yourself falling behind on this unit.</p>
-<p>Make sure you have watched the “Weekly Briefing” video above before commencing the remaining tasks in this week’s workbook !</p>
+<p>If you didn’t make it to the live briefing session earlier in the week, make sure you have watched the “Weekly Briefing” video above before commencing the remaining tasks in this week’s workbook !</p>
 <h1 id="section"></h1>
 <h3 id="task-2-language-and-libraries">Task 2: Language and Libraries</h3>
 <p>The implementation language for this unit will be C/C++. Everybody will have their own preferred language for writing code, however C/C++ is very much the standard for low-level graphics rendering applications. If we didn’t use this as the primary language for this unit, potential employers would think it very unusual.</p>
@@ -45,18 +45,19 @@
 <li>savePPM: saves the currently rendered content of the window to a .ppm image file</li>
 <li>saveBMP: saves the currently rendered content of the window to a .bmp image file</li>
 <li>clearPixels: clears all pixel colours (from the whole window)</li>
-<li>pollForInputEvents: Checks to see if there are any events waiting to be processed (returns true if there are !)</li>
+<li>pollForInputEvents: checks to see if there are any events waiting to be processed (returns true if there are !)</li>
 </ul>
+<p>Examples of how to call the methods of the DrawingWindow class are included in the template project introduced later in this workbook.</p>
 <h1 id="section-1"></h1>
 <h3 id="task-3-using-your-own-machine">Task 3: Using Your Own Machine</h3>
 <p>We have tried to use a programming environment that is agnostic to the underlying architecture and operating system (so it should be <em>fairly</em> straight-forward to get running on most machines !) We will test and mark assignment on the lab machines so you should not use any platform-specific features. If you use an IDE (Visual Studio, Eclipse, XCode etc) make sure that your project compiles without it (i.e. by providing a Make file that works on the lab machines).</p>
-<p>Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system’s package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on your package manager. Here are some likely candidates for a range of different package managers:</p>
+<p>Installation of SDL2 can sometimes be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system’s package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on your package manager. Here are some likely candidates for a range of different package managers:</p>
 <pre><code>apt install libsdl2-dev
 rpm -i SDL2-devel
 yum install SDL2-devel
 brew install sdl2
 port install libsdl2</code></pre>
-<p>If you can’t get your package manager to install SDL2 (or if you don’t have a package manager at all !) then you will have to install the <strong>development libraries</strong> manually from: <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a>. This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the include statement in the DrawingWindow.h file from <code>"SDL.h"</code> to <code>"SDL2/SDL.h"</code>.</p>
+<p>If you can’t get your package manager to install SDL2 (or if you don’t have a package manager at all !) then you will have to install the <strong>development libraries</strong> manually from: <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a>. This <em>may</em> involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the <code>include</code> statement in the DrawingWindow.h file from <code>"SDL.h"</code> to <code>"SDL2/SDL.h"</code></p>
 <p>The code template (that we will introduce later in this workbook) comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !</p>
 <p><strong>Hints &amp; Tips:</strong><br />
 If you are having difficulties installing SDL2 on your existing operating system, we have created a Vagrant box <a href="Vagrantfile" target="_blank">configuration file</a> that can be used to bring up a virtual machine with all of the required tools and libraries installed. See the comments at the top of the file for instructions on how to get started with Vagrant.</p>
@@ -83,12 +84,12 @@ Note: this rule requires the <a href="https://clang.llvm.org/docs/AddressSanitiz
 <p><img src="05%20The%20Template%20Project/images/red-noise.jpg" /></p>
 <p><strong>Hints &amp; Tips:</strong><br />
 Depending on the compiler that you have installed, you may need to edit the <em>Makefile</em> in order to change the compiler used to build the project (currently the project uses <code>clang++</code> but you may need to change this to <code>g++</code> or <code>cl</code>)</p>
-<p>A <em>CMake</em> build file <code>CMakeList.txt</code> is also included in the <em>RedNoise</em> project (in case you prefer using <em>CMake</em> rather than <em>Make</em>). Details of how to use <em>CMake</em> are included as comments in the <code>CMakeList.txt</code> file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as <em>CLion</em>.</p>
+<p>A <em>CMake</em> build file <a href="../../RedNoise/CMakeLists.txt" target="_blank">CMakeLists.txt</a> is also included in the <em>RedNoise</em> project (in case you prefer using <em>CMake</em> rather than <em>Make</em>). Details of how to use <em>CMake</em> are included as comments in the <code>CMakeLists.txt</code> file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as <em>CLion</em>.</p>
 <p>On some platforms you may need to include <code>&lt;cstring&gt;</code> in the DrawingWindow class (if the compiler complains that it can’t find <code>memset</code>).</p>
 <p>The cleanest way to quit an SDL application is by pressing the ESC key ! If you have a window that you can’t close (which does happen from time to time), you may need to kill off the process manually using Task Manager, Activity Monitor or the kill/killall command.</p>
 <h1 id="section-4"></h1>
 <h3 id="task-6-understanding-the-template">Task 6: Understanding the Template</h3>
-<p>It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks. The main function in the code contains a loop which:</p>
+<p>It is useful to spend a little time getting to know the structure of the <a href="../../RedNoise/src/RedNoise.cpp" target="_blank">template project code</a> - we are going to be using it a lot over the next few weeks. The main function in the code contains a loop which:</p>
 <ol type="1">
 <li>Polls the event queue for incoming mouse and keyboard events</li>
 <li>Updates the position of any moving elements of the scene</li>

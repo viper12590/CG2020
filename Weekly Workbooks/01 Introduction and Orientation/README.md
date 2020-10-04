@@ -5,8 +5,7 @@
 
 The aim of this short introductory workbook is to ease everybody gently into the first week of term. The main objective is to make sure that you are able to build and run the code template that you will need to complete this unit. This may take some time and perseverance to achieve (depending on the computer that you intend to use for this unit). It is therefore **ESSENTIAL** that you achieve everything in this workbook during the first week of term. If you are unable to build and run applications, you will find yourself falling behind on this unit.
 
-
-Make sure you have watched the "Weekly Briefing" video above before commencing the remaining tasks in this week's workbook !  
+If you didn't make it to the live briefing session earlier in the week, make sure you have watched the "Weekly Briefing" video above before commencing the remaining tasks in this week's workbook !  
 
 
 # 
@@ -33,7 +32,9 @@ In order to make things a little tidier, we have provided a "wrapper" object aro
 - savePPM: saves the currently rendered content of the window to a .ppm image file
 - saveBMP: saves the currently rendered content of the window to a .bmp image file
 - clearPixels: clears all pixel colours (from the whole window)
-- pollForInputEvents: Checks to see if there are any events waiting to be processed (returns true if there are !)
+- pollForInputEvents: checks to see if there are any events waiting to be processed (returns true if there are !)
+
+Examples of how to call the methods of the DrawingWindow class are included in the template project introduced later in this workbook. 
   
 
 
@@ -43,7 +44,7 @@ In order to make things a little tidier, we have provided a "wrapper" object aro
 
 We have tried to use a programming environment that is agnostic to the underlying architecture and operating system (so it should be _fairly_ straight-forward to get running on most machines !) We will test and mark assignment on the lab machines so you should not use any platform-specific features.  If you use an IDE (Visual Studio, Eclipse, XCode etc) make sure that your project compiles without it (i.e. by providing a Make file that works on the lab machines).
 
-Installation of SDL2 can often be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system's package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on your package manager. Here are some likely candidates for a range of different package managers:
+Installation of SDL2 can sometimes be non-trivial, due to the fact that it must link with native graphics libraries. For this reason, the recommended way to install it is using your operating system's package manager (e.g. apt, rpm, yum, brew, ports etc). The name of the required package will vary depending on your package manager. Here are some likely candidates for a range of different package managers:
 ```
 apt install libsdl2-dev
 rpm -i SDL2-devel
@@ -52,7 +53,7 @@ brew install sdl2
 port install libsdl2
 ```
 
-If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This will involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the include statement in the DrawingWindow.h file from `"SDL.h"` to `"SDL2/SDL.h"`.
+If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This _may_ involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the `include` statement in the DrawingWindow.h file from `"SDL.h"` to `"SDL2/SDL.h"`
 
 The code template (that we will introduce later in this workbook) comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !
   
@@ -109,7 +110,7 @@ When you successfully build and run the _RedNoise_ project you should see a wind
 **Hints & Tips:**  
 Depending on the compiler that you have installed, you may need to edit the _Makefile_ in order to change the compiler used to build the project (currently the project uses `clang++` but you may need to change this to `g++` or `cl`)
 
-A _CMake_ build file `CMakeList.txt` is also included in the _RedNoise_ project (in case you prefer using _CMake_ rather than _Make_). Details of how to use _CMake_ are included as comments in the `CMakeList.txt` file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as _CLion_.
+A _CMake_ build file <a href="../../RedNoise/CMakeLists.txt" target="_blank">CMakeLists.txt</a> is also included in the _RedNoise_ project (in case you prefer using _CMake_ rather than _Make_). Details of how to use _CMake_ are included as comments in the `CMakeLists.txt` file. This configuration file will also allow you to import and automatically configure the project in C++ IDEs such as _CLion_.
 
 On some platforms you may need to include `<cstring>` in the DrawingWindow class (if the compiler complains that it can't find `memset`).
 
@@ -120,7 +121,7 @@ The cleanest way to quit an SDL application is by pressing the ESC key ! If you 
 ### Task 6: Understanding the Template
 
 
-It is useful to spend a little time getting to know the structure of the template project - we are going to be using it a lot over the next few weeks. The main function in the code contains a loop which:
+It is useful to spend a little time getting to know the structure of the <a href="../../RedNoise/src/RedNoise.cpp" target="_blank">template project code</a> - we are going to be using it a lot over the next few weeks. The main function in the code contains a loop which:
 
 1. Polls the event queue for incoming mouse and keyboard events
 2. Updates the position of any moving elements of the scene

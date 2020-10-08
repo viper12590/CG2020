@@ -56,7 +56,8 @@
 rpm -i SDL2-devel
 yum install SDL2-devel
 brew install sdl2
-port install libsdl2</code></pre>
+port install libsdl2
+pacman -S sdl2</code></pre>
 <p>If you can’t get your package manager to install SDL2 (or if you don’t have a package manager at all !) then you will have to install the <strong>development libraries</strong> manually from: <a href="https://www.libsdl.org/download-2.0.php">https://www.libsdl.org/download-2.0.php</a>. This <em>may</em> involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the <code>include</code> statement in the DrawingWindow.h file from <code>"SDL.h"</code> to <code>"SDL2/SDL.h"</code></p>
 <p>The code template (that we will introduce later in this workbook) comes bundled with the GLM library built-in, so there is no need for you to install this yourselves !</p>
 <p><strong>Hints &amp; Tips:</strong><br />

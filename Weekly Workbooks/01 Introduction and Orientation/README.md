@@ -51,6 +51,7 @@ rpm -i SDL2-devel
 yum install SDL2-devel
 brew install sdl2
 port install libsdl2
+pacman -S sdl2
 ```
 
 If you can't get your package manager to install SDL2 (or if you don't have a package manager at all !) then you will have to install the **development libraries** manually from: [https://www.libsdl.org/download-2.0.php](https://www.libsdl.org/download-2.0.php). This _may_ involve manually copying libraries/headers and potentially setting up environment variables - there are plenty of guides for specific platforms online. Note that on some platforms you might have to alter the `include` statement in the DrawingWindow.h file from `"SDL.h"` to `"SDL2/SDL.h"`

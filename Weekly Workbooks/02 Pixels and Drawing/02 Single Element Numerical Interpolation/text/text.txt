@@ -1,0 +1,21 @@
+Interpolation (informally: "filling in the gaps between known values") is an essential operation in computer graphics. We will use it time and time again in this unit (for various different purposes). It is essential that we become familiar with the basic process - we are going to need to interpolate some complex constructs later on.
+
+Let us start simply: create a duplicate of the _RedNoise_ template (giving the new project a suitable name) and then add a function called _interpolateSingleFloats_ that takes 3 parameters:
+- from: a floating point number to start from
+- to: a floating point number to go up to
+- numberOfValues: the number of steps required from the start to the end
+
+This function should return an **evenly spaced** list (as a vector) of size _numberOfValues_ that contains floating point numbers that start at _from_ and ends at _to_.
+
+So, for example, calling: `interpolateSingleFloats(2.2, 8.5, 7)` should return a vector containing the following values: `2.2, 3.25, 4.3, 5.35, 6.4, 7.45, 8.5`
+
+Test out your function to make sure it correctly prints out the above values by using the following code in your project's main function:
+
+``` cpp
+std::vector<float> result;
+result = interpolateSingleFloats(2.2, 8.5, 7);
+for(size_t i=0; i<result.size(); i++) std::cout << result[i] << " ";
+std::cout << std::endl;
+```
+
+Note that `std::cout` refers to the character output object of the standard library and that `std::endl` is a flushed newline. It is also worth commenting that `size_t` is an unsigned integer type provided by C++ that is useful for comparing with the size of things (like vectors).

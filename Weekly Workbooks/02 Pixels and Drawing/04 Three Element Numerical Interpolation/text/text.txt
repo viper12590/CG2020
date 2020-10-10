@@ -1,0 +1,17 @@
+Write a new function called _interpolateThreeElementValues_ that operates on three-element floating point values, rather than just single floats. These three-element floating point values should be instances of the <a href="https://en.wikibooks.org/wiki/GLSL_Programming/Vector_and_Matrix_Operations" target="_blank">vec3</a> class provided by GLM. If we have a function that can interpolate these, then we can deal with a wide range of entities including colours, 3D coordinates (in fact anything with 3 elements !)  
+
+If we have the following two `vec3` variables:
+``` cpp
+glm::vec3 from(1, 4, 9.2);
+glm::vec3 to(4, 1, 9.8);
+```
+And pass them into our new interpolation function (along with a _numberOfValues_ of 4), then we should get the following results back:
+
+``` cpp
+(1, 4, 9.2)
+(2, 3, 9.4)
+(3, 2, 9.6)
+(4, 1, 9.8)
+```
+
+Write your function and then test it with the above values in order to check that it operates as intended.

@@ -1,0 +1,5 @@
+Before commencing with this week's workbook, make sure you have first watched the "Weekly Briefing" linked to above.
+
+This week we will take a look at the fundamentals of computer graphics: namely pixels and drawing. Everything that we cover this week will be in 2 dimensions. In future weeks we will move on to begin working in 3D, it is however important that we walk before we try to run !
+
+You will hopefully find this workbook fairly straightforward and should be able to complete it relatively quickly. This is intended to be a gentle week in order to provide some flexibility in the workload - in case you are still having difficulties installing SDL2, compiling and running your code. Next week the workbooks start to get more challenging !

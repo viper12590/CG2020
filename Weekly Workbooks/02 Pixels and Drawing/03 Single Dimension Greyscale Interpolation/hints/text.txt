@@ -1,0 +1,2 @@
+Use the pixel looping code from the _RedNoise_ template to help get you started.  
+Don't worry about the transparency/alpha of the pixels - just set it to 255 (fully opaque) as in the _RedNoise_ template.

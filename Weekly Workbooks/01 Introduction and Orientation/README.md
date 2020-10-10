@@ -141,7 +141,8 @@ You will note from the `handleEvent` method that it is possible to respond to bo
 It is important to be able to monitor the progress of students as they progress through these workbooks.
 This is to ensure that everyone is keeping up to date with the work and to identify students who are struggling.
 For these reasons, it is **ESSENTIAL** that you keep a logbook of progress that you are making.
-To minimise the overhead in keeping this logbook, you are only required to capture a single screenshot each week.
+To minimise the overhead in keeping this logbook, you are only required to capture a single screenshot each week
+(you only need to include the DrawingWindow, not the whole desktop).
 Try to capture something that summarises the progress that you have made and upload this onto the
 [logbook submission area on blackboard](https://www.ole.bris.ac.uk/webapps/assignment/uploadAssignment?content_id=_4837989_1&course_id=_240795_1&group_id=&mode=cpview).
 (Note: you might have to log into blackboard _first_ before your click on this link !).

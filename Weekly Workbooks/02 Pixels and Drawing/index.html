@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>02 Pixels and Drawing</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">02 Pixels and Drawing</h1>
+</header>
+<h2 id="pixels-and-drawing">Pixels and Drawing</h2>
+<h3 id="weekly-briefing"><a href='https://web.microsoftstream.com/channel/b84051cb-1dba-4cb4-a271-60cc6635f92f' target='_blank'> Weekly Briefing <img src="../../resources/icons/briefing.png" /> </a></h3>
+<h3 id="task-1-introduction">Task 1: Introduction</h3>
+<p>Before commencing with this week’s workbook, make sure you have first watched the “Weekly Briefing” linked to above.</p>
+<p>This week we will take a look at the fundamentals of computer graphics: namely pixels and drawing. Everything that we cover this week will be in 2 dimensions. In future weeks we will move on to begin working in 3D, it is however important that we walk before we try to run !</p>
+<p>You will hopefully find this workbook fairly straightforward and should be able to complete it relatively quickly. This is intended to be a gentle week in order to provide some flexibility in the workload - in case you are still having difficulties installing SDL2, compiling and running your code. Next week the workbooks start to get more challenging !</p>
+<h1 id="section"></h1>
+<h3 id="task-2-single-element-numerical-interpolation">Task 2: Single Element Numerical Interpolation</h3>
+<p>Interpolation (informally: “filling in the gaps between known values”) is an essential operation in computer graphics. We will use it time and time again in this unit (for various different purposes). It is essential that we become familiar with the basic process - we are going to need to interpolate some complex constructs later on.</p>
+<p>Let us start simply: create a duplicate of the <em>RedNoise</em> template (giving the new project a suitable name) and then add a function called <em>interpolateSingleFloats</em> that takes 3 parameters: - from: a floating point number to start from - to: a floating point number to go up to - numberOfValues: the number of steps required from the start to the end</p>
+<p>This function should return an <strong>evenly spaced</strong> list (as a vector) of size <em>numberOfValues</em> that contains floating point numbers that start at <em>from</em> and ends at <em>to</em>.</p>
+<p>So, for example, calling: <code>interpolateSingleFloats(2.2, 8.5, 7)</code> should return a vector containing the following values: <code>2.2, 3.25, 4.3, 5.35, 6.4, 7.45, 8.5</code></p>
+<p>Test out your function to make sure it correctly prints out the above values by using the following code in your project’s main function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a><span class="bu">std::</span>vector&lt;<span class="dt">float</span>&gt; result;</span>
+<span id="cb1-2"><a href="#cb1-2"></a>result = interpolateSingleFloats(<span class="fl">2.2</span>, <span class="fl">8.5</span>, <span class="dv">7</span>);</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="cf">for</span>(<span class="dt">size_t</span> i=<span class="dv">0</span>; i&lt;result.size(); i++) <span class="bu">std::</span>cout &lt;&lt; result[i] &lt;&lt; <span class="st">&quot; &quot;</span>;</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="bu">std::</span>cout &lt;&lt; <span class="bu">std::</span>endl;</span></code></pre></div>
+<p>Note that <code>std::cout</code> refers to the character output object of the standard library and that <code>std::endl</code> is a flushed newline. It is also worth commenting that <code>size_t</code> is an unsigned integer type provided by C++ that is useful for comparing with the size of things (like vectors).</p>
+<h1 id="section-1"></h1>
+<h3 id="task-3-single-dimension-greyscale-interpolation">Task 3: Single Dimension Greyscale Interpolation</h3>
+<p><a href='03%20Single%20Dimension%20Greyscale%20Interpolation/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='03%20Single%20Dimension%20Greyscale%20Interpolation/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a></p>
+<p>Interpolating numbers is fine, but this unit is supposed to be about graphics - so let’s draw something ! Using your floating point interpolation function that you wrote in the previous task, draw a greyscale gradient across the <em>DisplayWindow</em>, from left to right (as shown in the image below).</p>
+<p>You will need to create a range of RGB values packed into <code>uint32_t</code> variables in order to set the colour of each pixel. In order to achieve this, you will need to take a look at the slides and audio narration for this section (the blue buttons above) to find out more about pixels and pixel colour packing.</p>
+<p><img src="03%20Single%20Dimension%20Greyscale%20Interpolation/images/grey-scale.jpg" /></p>
+<p><strong>Hints &amp; Tips:</strong><br />
+Use the pixel looping code from the <em>RedNoise</em> template to help get you started.<br />
+Don’t worry about the transparency/alpha of the pixels - just set it to 255 (fully opaque) as in the <em>RedNoise</em> template.</p>
+<h1 id="section-2"></h1>
+<h3 id="task-4-three-element-numerical-interpolation">Task 4: Three Element Numerical Interpolation</h3>
+<p>Write a new function called <em>interpolateThreeElementValues</em> that operates on three-element floating point values, rather than just single floats. These three-element floating point values should be instances of the <a href="https://en.wikibooks.org/wiki/GLSL_Programming/Vector_and_Matrix_Operations" target="_blank">vec3</a> class provided by GLM. If we have a function that can interpolate these, then we can deal with a wide range of entities including colours, 3D coordinates (in fact anything with 3 elements !)</p>
+<p>If we have the following two <code>vec3</code> variables:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a>glm::vec3 from(<span class="dv">1</span>, <span class="dv">4</span>, <span class="fl">9.2</span>);</span>
+<span id="cb2-2"><a href="#cb2-2"></a>glm::vec3 to(<span class="dv">4</span>, <span class="dv">1</span>, <span class="fl">9.8</span>);</span></code></pre></div>
+<p>And pass them into our new interpolation function (along with a <em>numberOfValues</em> of 4), then we should get the following results back:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="fl">9.2</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="fl">9.4</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="fl">9.6</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a>(<span class="dv">4</span>, <span class="dv">1</span>, <span class="fl">9.8</span>)</span></code></pre></div>
+<p>Write your function and then test it with the above values in order to check that it operates as intended.</p>
+<h1 id="section-3"></h1>
+<h3 id="task-5-two-dimension-colour-interpolation">Task 5: Two Dimension Colour Interpolation</h3>
+<p><a href='05%20Two%20Dimension%20Colour%20Interpolation/animation/segment-1.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a></p>
+<p>In the earlier grayscale interpolation task, we were interpolating a single float value in just one dimension (the x axis). In this current task we will interpolate 3 float values (Red / Green / Blue) in two dimensions (x and y). Watch the animation button above to view a video showing more details about interpolating RGB colour values. Once you are confident with the concepts covered, implement the 2D RGB interpolation in order to produce the effect shown in the image below:</p>
+<p><img src="05%20Two%20Dimension%20Colour%20Interpolation/images/colour-spectrum.jpg" /></p>
+<p><strong>Hints &amp; Tips:</strong><br />
+A good way to tackle this problem is to start by creating variables for the four corners of the window and initialising them with the following primary colours:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1"></a>glm::vec3 topLeft(<span class="dv">255</span>, <span class="dv">0</span>, <span class="dv">0</span>);        <span class="co">// red </span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>glm::vec3 topRight(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">255</span>);       <span class="co">// blue </span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>glm::vec3 bottomRight(<span class="dv">0</span>, <span class="dv">255</span>, <span class="dv">0</span>);    <span class="co">// green </span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>glm::vec3 bottomLeft(<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">0</span>);   <span class="co">// yellow</span></span></code></pre></div>
+<p>Then, using your previously written <code>vec3</code> interpolation function to help: 1. Calculate the colour of all the pixels in the first (left-most) column of the window 2. Calculate the colour of all the pixels in the last (right-most) column of the window 3. For each row, calculate the colour of all the pixels in that row by interpolating between the first and last pixels</p>
+<h1 id="section-4"></h1>
+<h3 id="progress-logbook">Progress Logbook</h3>
+<p>It is important to be able to monitor the progress of students as they progress through these workbooks. This is to ensure that everyone is keeping up to date with the work and to identify students who are struggling. For these reasons, it is <strong>ESSENTIAL</strong> that you keep a logbook of progress that you are making. To minimise the overhead in keeping this logbook, you are only required to capture a single screenshot each week (you only need to include the DrawingWindow, not the whole desktop). Try to capture something that summarises the progress that you have made and upload this onto the <a href="https://www.ole.bris.ac.uk/webapps/assignment/uploadAssignment?content_id=_4837989_1&amp;course_id=_240795_1&amp;group_id=&amp;mode=cpview">logbook submission area on blackboard</a>. (Note: you might have to log into blackboard <em>first</em> before your click on this link !). It is important that <strong>EVERYBODY</strong> uploads an image (so we can be sure that everyone is engaging with the unit). If you don’t keep your logbook up to date then you’ll find us getting in touch to see if everything is OK !</p>
+</body>
+</html>

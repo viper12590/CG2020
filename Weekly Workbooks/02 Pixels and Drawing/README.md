@@ -41,7 +41,7 @@ Note that `std::cout` refers to the character output object of the standard libr
 ### Task 3: Single Dimension Greyscale Interpolation
  <a href='03%20Single%20Dimension%20Greyscale%20Interpolation/slides/segment-1.pdf' target='_blank'> ![](../../resources/icons/slides.png) </a> <a href='03%20Single%20Dimension%20Greyscale%20Interpolation/audio/segment-1.mp4' target='_blank'> ![](../../resources/icons/audio.png) </a>
 
-Interpolating numbers is fine, but this unit is supposed to be about graphics - so let's draw something ! Using your floating point interpolation function that you wrote in the previous task, draw a greyscale gradient across the _DisplayWindow_, from left to right (as shown in the image below). 
+Interpolating numbers is fine, but this unit is supposed to be about graphics - so let's draw something ! Using your floating point interpolation function that you wrote in the previous task, draw a greyscale gradient across the _DrawingWindow_, from left to right (as shown in the image below). 
 
 You will need to create a range of RGB values packed into `uint32_t` variables in order to set the colour of each pixel. In order to achieve this, you will need to take a look at the slides and audio narration for this section (the blue buttons above) to find out more about pixels and pixel colour packing.  
 

@@ -76,6 +76,10 @@ And pass them into our new interpolation function (along with a _numberOfValues_
 Write your function and then test it with the above values in order to check that it operates as intended.  
 
 
+**Hints & Tips:**  
+In order to use the `vec3` class, you will need to import the GLM header file with `#include <glm/glm.hpp>`  
+
+
 # 
 ### Task 5: Two Dimension Colour Interpolation
  <a href='05%20Two%20Dimension%20Colour%20Interpolation/animation/segment-1.mp4' target='_blank'> ![](../../resources/icons/animation.png) </a>

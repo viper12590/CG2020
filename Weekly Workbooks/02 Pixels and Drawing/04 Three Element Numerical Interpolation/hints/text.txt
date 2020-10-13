@@ -1,0 +1,1 @@
+In order to use the `vec3` class, you will need to import the GLM header file with `#include <glm/glm.hpp>`

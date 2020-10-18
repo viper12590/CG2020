@@ -1,0 +1,8 @@
+Add a new function to your code that draws “stroked” (unfilled) triangles. This function should draw the three outer edge lines of a triangle passed in as parameters. You should also allow a colour to be passed in so that different coloured triangles can be drawn. 
+
+A `CanvasTriangle` class has been provided in the libs/sdw folder to help you. This class represents a 2D triangle for drawing onto the image plane (canvas). This class contains an array of three `CanvasPoints` to store the vertices of the triangle. Add `#include <CanvasTriangle.h>` to your code in order to import this class.
+
+In order to make your application interactive, add to the event handling function so that when the `u` key is pressed, the triangle drawing function is called with a `CanvasTriangle` of 3 randomly generated vertices. You should also randomly generate a colour for the triangle as well !  
+
+Test out your code by pressing the `u` key (lots of times !!!).  
+You should end up with a screen that looks something like the one below.

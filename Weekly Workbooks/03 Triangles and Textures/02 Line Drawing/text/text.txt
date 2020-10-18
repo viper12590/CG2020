@@ -1,0 +1,9 @@
+We start this week by writing one of the core building blocks of any graphics framework - a function to draw straight lines. Although this might seem simple and straight-forward, there are some technical implementation issues that provide a useful learning opportunity !
+
+View the slides and audio narration linked to above and then, using the knowledge gained, add a function to your code to draw a simple line from one point to another. 
+
+A `CanvasPoint` class has been provided in the libs/sdw folder to help you. This class represents a particular point on the drawing window (what is often called the drawing "canvas"). This class contains the x and y coordinates of the point, as well as a number of other attributes that we will use in subsequent workbooks (just ignore these for the time being). Add `#include <CanvasPoint.h>` to your code in order to import this class.
+
+You should allow a colour to be passed into your function so that different coloured lines can be drawn. A `Colour` class has been provided in the libs/sdw folder to help you - this class contains values for red, green and blue channels as well as an optional name for the colour (don't worry about naming your colours in for this workbook - we will use colour names in a later exercise). Add `#include <Colour.h>` to your code in order to import this class.
+
+Test your code by drawing some lines to and from known locations (e.g. top-left corner of the window to the centre of the window, a vertical line in middle of the screen etc.).

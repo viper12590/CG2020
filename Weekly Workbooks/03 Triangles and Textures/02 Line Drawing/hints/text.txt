@@ -1,0 +1,3 @@
+Use the knowledge of interpolation you gained from the last practical sessions to help !
+
+The `CanvasPoint` and `Colour` classes override the `<<` operator so that you can direct them straight to `cout` for debugging purposes.

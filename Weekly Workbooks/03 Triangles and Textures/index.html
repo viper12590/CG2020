@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>03 Triangles and Textures</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">03 Triangles and Textures</h1>
+</header>
+<h2 id="triangles-and-textures">Triangles and Textures</h2>
+<h3 id="weekly-briefing"><a href='https://web.microsoftstream.com/channel/b84051cb-1dba-4cb4-a271-60cc6635f92f' target='_blank'> Weekly Briefing <img src="../../resources/icons/briefing.png" /> </a></h3>
+<h3 id="task-1-introduction">Task 1: Introduction</h3>
+<p>As usual, make sure you watch the weekly briefing above before attempting to complete this week’s workbook tasks.</p>
+<p>Although we are still working primarily in 2 dimensions, the aim of this week’s workbook is to build up a collection of useful drawing functions that can be used later on in the unit. Much of the later work will be in 3D however, as we shall soon see, we will still need to do a lot of 2D drawing. After all - displays are by their very nature two dimensional !</p>
+<p><strong>Important:</strong> Make sure you read the “Hints and Tips” at the end of each section before attempting that task. This might save you a lot of time and anguish !</p>
+<h1 id="section"></h1>
+<h3 id="task-2-line-drawing">Task 2: Line Drawing</h3>
+<p><a href='02%20Line%20Drawing/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='02%20Line%20Drawing/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a></p>
+<p>We start this week by writing one of the core building blocks of any graphics framework - a function to draw straight lines. Although this might seem simple and straight-forward, there are some technical implementation issues that provide a useful learning opportunity !</p>
+<p>View the slides and audio narration linked to above and then, using the knowledge gained, add a function to your code to draw a simple line from one point to another.</p>
+<p>A <code>CanvasPoint</code> class has been provided in the libs/sdw folder to help you. This class represents a particular point on the drawing window (what is often called the drawing “canvas”). This class contains the x and y coordinates of the point, as well as a number of other attributes that we will use in subsequent workbooks (just ignore these for the time being). Add <code>#include &lt;CanvasPoint.h&gt;</code> to your code in order to import this class.</p>
+<p>You should allow a colour to be passed into your function so that different coloured lines can be drawn. A <code>Colour</code> class has been provided in the libs/sdw folder to help you - this class contains values for red, green and blue channels as well as an optional name for the colour (don’t worry about naming your colours in for this workbook - we will use colour names in a later exercise). Add <code>#include &lt;Colour.h&gt;</code> to your code in order to import this class.</p>
+<p>Test your code by drawing some lines to and from known locations (e.g. top-left corner of the window to the centre of the window, a vertical line in middle of the screen etc.).</p>
+<p><strong>Hints &amp; Tips:</strong><br />
+Use the knowledge of interpolation you gained from the last practical sessions to help !</p>
+<p>The <code>CanvasPoint</code> and <code>Colour</code> classes override the <code>&lt;&lt;</code> operator so that you can direct them straight to <code>cout</code> for debugging purposes.</p>
+<h1 id="section-1"></h1>
+<h3 id="task-3-stroked-triangles">Task 3: Stroked Triangles</h3>
+<p>Add a new function to your code that draws “stroked” (unfilled) triangles. This function should draw the three outer edge lines of a triangle passed in as parameters. You should also allow a colour to be passed in so that different coloured triangles can be drawn.</p>
+<p>A <code>CanvasTriangle</code> class has been provided in the libs/sdw folder to help you. This class represents a 2D triangle for drawing onto the image plane (canvas). This class contains an array of three <code>CanvasPoints</code> to store the vertices of the triangle. Add <code>#include &lt;CanvasTriangle.h&gt;</code> to your code in order to import this class.</p>
+<p>In order to make your application interactive, add to the event handling function so that when the <code>u</code> key is pressed, the triangle drawing function is called with a <code>CanvasTriangle</code> of 3 randomly generated vertices. You should also randomly generate a colour for the triangle as well !</p>
+<p>Test out your code by pressing the <code>u</code> key (lots of times !!!).<br />
+You should end up with a screen that looks something like the one below.</p>
+<p><img src="03%20Stroked%20Triangles/images/stroked-triangles.jpg" /></p>
+<p><strong>Hints &amp; Tips:</strong><br />
+Use the standard C <a href="http://www.cplusplus.com/reference/cstdlib/rand/" target="_blank">rand</a> function to help (e.g. <code>rand()%256</code> gives a random number between 0-255).</p>
+<p>The <code>CanvasTriangle</code> class overrides the <code>&lt;&lt;</code> operator so that you can direct them straight to <code>cout</code> for debugging purposes.</p>
+<h1 id="section-2"></h1>
+<h3 id="task-4-filled-triangles">Task 4: Filled Triangles</h3>
+<p><a href='04%20Filled%20Triangles/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='04%20Filled%20Triangles/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='04%20Filled%20Triangles/audio/segment-2.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='04%20Filled%20Triangles/animation/segment-1.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a> <a href='04%20Filled%20Triangles/animation/segment-2.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a></p>
+<p>Drawing filled triangles is more difficult than you might think ! Take a look at the media linked to by the buttons above (you will notice that there are a number of them - reflecting the complexity of this task). Note that you do NOT need to implement the interactive features demonstrated in the above animations - these are just for illustration purposes. You should however write a new function that takes a <code>CanvasTriangle</code> and a <code>Colour</code> as parameters and draws a suitable <em>filled</em> triangle.</p>
+<p>As well as drawing a filled triangle of the specified colour, your function should also draw a white <em>stroked</em> triangle over the top of it (this is to make sure that your “rasterising” is correct - both filled and stroked triangles should line up !)</p>
+<p>Make your application interactive, so that pressing the <code>f</code> key will cause a random filled triangle to be drawn (with a random colour). You should end up with a screen that looks something like the one below.</p>
+<p><img src="04%20Filled%20Triangles/images/filled-triangles.jpg" /></p>
+<p><img src="04%20Filled%20Triangles/images/skipped-line.jpg" /></p>
+<p><strong>Hints &amp; Tips:</strong><br />
+Watch out for “skipped” lines, as with the orange triangle illustrated above. This is due to truncating floats when converting them into integer screen coordinates - you should really be rounding them to the nearest whole number !</p>
+<p>You may like to use the standard C <code>std::swap</code> function if you need to do any sorting ;o)</p>
+<h1 id="section-3"></h1>
+<h3 id="task-5-texture-mapping">Task 5: Texture Mapping</h3>
+<p><a href='05%20Texture%20Mapping/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='05%20Texture%20Mapping/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='05%20Texture%20Mapping/animation/segment-1.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a> <a href='05%20Texture%20Mapping/animation/segment-2.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a></p>
+<p>In this task, rather than drawing a filled triangle with a <em>single</em> colour, you will load in a texture map from a file and apply it to the triangle. View the slides, audio narration and animations above to gain an understanding of how to do this. Again, the interactive features (i.e. dragging points around the screen) do NOT need to be implemented - this are just for demonstration purposes in the animations.</p>
+<p>A <code>TextureMap</code> class has been provided for you in the libs/sdw folder. This class has a constructor that takes a single parameter (the filename of a PPM image file to load). A sample <a href="texture.ppm">PPM texture map</a> has been provided for you to use in this week’s practical work. Each <code>TextureMap</code> object has publicly accessible <code>width</code> and <code>height</code> attributes.</p>
+<p><code>TextureMap</code> objects also have a <code>pixels</code> variable - a vector of pixel-packed RGB data. Note that this <code>pixels</code> variable is 1D (i.e. there is no representation of x or y positioning). The pixel data is just stored linearly, with the pixels from each row following directly on from those of the previous row. The vector contains pure RGB data - there is no concept of a “newline” or “end of row” marker. As a result, you will need to be very careful when indexing pixel values from this vector !</p>
+<p>You might have noticed that the <code>CanvasPoint</code> class has a <code>TexturePoint</code> variable - this can be used to maintain the relationship between triangle vertices and positions on the texture map.</p>
+<p>In order to test out your texture mapping code, you should attempt to texture map a canvas triangle that consists of the following three vertices:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Canvas Point</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">(160, 10)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">(300, 230)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">(10, 150)</td>
+</tr>
+</tbody>
+</table>
+<p>You should fill this triangle with pixels from the texture map - the mapping between canvas points and texture map points should be as follows:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Canvas Point</th>
+<th></th>
+<th style="text-align: center;">Texture Point</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">(160, 10)</td>
+<td>→</td>
+<td style="text-align: center;">(195, 5)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">(300, 230)</td>
+<td>→</td>
+<td style="text-align: center;">(395, 380)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">(10, 150)</td>
+<td>→</td>
+<td style="text-align: center;">(65, 330)</td>
+</tr>
+</tbody>
+</table>
+<p>If all goes to plan, you should end up with a textured triangle that looks like the one below:</p>
+<p><img src="05%20Texture%20Mapping/images/textured-triangle.jpg" /></p>
+<p><strong>Hints &amp; Tips:</strong><br />
+Any new canvas points you create (e.g. when splitting triangles) must also be linked to a texture point (calculated by interpolating a suitable position within the texture image).</p>
+<p><strong>Important</strong>: Although the canvas triangles will be flat topped/bottomed, the equivalent texture triangles will NOT be.</p>
+<p>Be careful when calculating the texture map pixel index values - if some of your variables are floats, there is the danger that converting to integer values may lead to skewed texturing !</p>
+<h1 id="section-4"></h1>
+<h3 id="progress-logbook">Progress Logbook</h3>
+<p>It is important to be able to monitor the progress of students as they progress through these workbooks. This is to ensure that everyone is keeping up to date with the work and to identify students who are struggling. For these reasons, it is <strong>ESSENTIAL</strong> that you keep a logbook of progress that you are making. To minimise the overhead in keeping this logbook, you are only required to capture a single screenshot each week (you only need to include the DrawingWindow, not the whole desktop). Try to capture something that summarises the progress that you have made and upload this onto the <a href="https://www.ole.bris.ac.uk/webapps/assignment/uploadAssignment?content_id=_4837989_1&amp;course_id=_240795_1&amp;group_id=&amp;mode=cpview">logbook submission area on blackboard</a>. (Note: you might have to log into blackboard <em>first</em> before your click on this link !). It is important that <strong>EVERYBODY</strong> uploads an image (so we can be sure that everyone is engaging with the unit). If you don’t keep your logbook up to date then you’ll find us getting in touch to see if everything is OK !</p>
+</body>
+</html>

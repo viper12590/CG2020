@@ -1,0 +1,4 @@
+Use the standard C <a href="http://www.cplusplus.com/reference/cstdlib/rand/" target="_blank">rand</a> function to help (e.g. `rand()%256` gives a random number between 0-255).
+
+
+The `CanvasTriangle` class overrides the `<<` operator so that you can direct them straight to `cout` for debugging purposes.

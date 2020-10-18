@@ -1,0 +1,5 @@
+As usual, make sure you watch the weekly briefing above before attempting to complete this week's workbook tasks.
+
+Although we are still working primarily in 2 dimensions, the aim of this week's workbook is to build up a collection of useful drawing functions that can be used later on in the unit. Much of the later work will be in 3D however, as we shall soon see, we will still need to do a lot of 2D drawing. After all - displays are by their very nature two dimensional !
+
+**Important:** Make sure you read the "Hints and Tips" at the end of each section before attempting that task. This might save you a lot of time and anguish !

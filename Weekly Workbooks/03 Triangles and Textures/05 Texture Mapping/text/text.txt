@@ -1,0 +1,26 @@
+In this task, rather than drawing a filled triangle with a _single_ colour, you will load in a texture map from a file and apply it to the triangle. View the slides, audio narration and animations above to gain an understanding of how to do this. Again, the interactive features (i.e. dragging points around the screen) do NOT need to be implemented - this are just for demonstration purposes in the animations.
+
+A `TextureMap` class has been provided for you in the libs/sdw folder. This class has a constructor that takes a single parameter (the filename of a PPM image file to load). A sample <a href="texture.ppm">PPM texture map</a> has been provided for you to use in this week's practical work. Each `TextureMap` object has publicly accessible `width` and `height` attributes.
+
+`TextureMap` objects also have a `pixels` variable - a vector of pixel-packed RGB data. Note that this `pixels` variable is 1D (i.e. there is no representation of x or y positioning). The pixel data is just stored linearly, with the pixels from each row following directly on from those of the previous row. The vector contains pure RGB data - there is no concept of a "newline" or "end of row" marker. As a result, you will need to be very careful when indexing pixel values from this vector !
+
+You might have noticed that the `CanvasPoint` class has a `TexturePoint` variable - this can be used to maintain the relationship between triangle vertices and positions on the texture map.
+
+In order to test out your texture mapping code, you should attempt to texture map a canvas triangle that consists of the following three vertices:
+
+| Canvas Point |
+|:------------:|
+|  (160, 10)   |
+|  (300, 230)  |
+|  (10, 150)   |
+
+
+You should fill this triangle with pixels from the texture map - the mapping between canvas points and texture map points should be as follows:
+
+| Canvas Point |   | Texture Point |
+|:------------:|---|:-------------:|
+|  (160, 10)   | → |   (195, 5)    |
+|  (300, 230)  | → |   (395, 380)  |
+|  (10, 150)   | → |   (65, 330)   |
+
+If all goes to plan, you should end up with a textured triangle that looks like the one below:

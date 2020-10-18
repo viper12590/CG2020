@@ -1,0 +1,3 @@
+Watch out for "skipped" lines, as with the orange triangle illustrated above. This is due to truncating floats when converting them into integer screen coordinates - you should really be rounding them to the nearest whole number !
+
+You may like to use the standard C `std::swap` function if you need to do any sorting ;o)

@@ -1,0 +1,7 @@
+Once you have read in the geometry data, your next job is to write a function to read in
+<a href="models/cornell-box.mtl" target="_blank">this sample OBJ material file</a>
+and populate a "palette" of colours. You can use the previously encountered `Colour` class for this purpose (this is where the `name` attribute now becomes useful).
+
+You could just use a vector to store the palette of colours or, if you want something a bit fancier, use a hashmap/hashtable for more efficient colour lookup (using the name of the colour as a key).
+
+Once you have successfully loaded the materials file, add some additional code to your geometry parsing function (from the previous task) so that it accesses your colour palette when it encounters a reference to a material (lines that begin with `usemtl` in the OBJ material file). Note that `ModelTriangle` objects have a `colour` attribute that can be used to store a reference to the colour of that triangle.

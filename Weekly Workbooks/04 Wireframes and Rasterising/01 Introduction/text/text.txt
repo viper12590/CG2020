@@ -1,0 +1,8 @@
+In this workbook we start to work in 3 dimensions ! 
+Our fundamental objective is to take a 3D model (specified as a bunch of vertices in 3 dimensional space) and attempt to render them as a 2 dimensional image. In order to achieve this, we will make good use of the 2D drawing functions that you have written previously.
+
+Rendering a 3D model onto a 2D image plane requires us to take a particular perspective/viewpoint on that 3D model. To aid in this discussion, we introduce the concept of a _camera_ - take a look at the slides and audio narration above for an explanation of this concept.
+
+To help you in completing this week's tasks, you have been provided with a `ModelTriangle` class (found in the libs/sdw folder). This class represents a triangular plane in 3D space and contains variables to hold the positions of its three vertices, as well as the colour of the triangle's surface. As usual, this class overrides the `<<` operator so that you can direct it to `cout` for debugging purposes.
+
+For this workbook, you will need to make use of the <a href="https://en.wikibooks.org/wiki/GLSL_Programming/Vector_and_Matrix_Operations" target="_blank">vec3 and vec4 classes</a> from the GLM library - it might be an idea to become familiar with these now !

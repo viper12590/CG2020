@@ -1,0 +1,9 @@
+The first implementation task in this practical is to write a low-level file reader that can parse in 3D models from flat data files. Although the focus of this unit is not on grammars and parsing, understanding how models can be stored in data files provides us with valuable insight into the essential characteristics of 3D geometry and material properties. Check out the slides and audio narration above to find out about the OBJ file format.
+
+Once you are happy with the concepts above, write a function that reads in 
+<a href="models/cornell-box.obj" target="_blank">this sample OBJ geometry file</a>
+and use the data to populate a vector of `ModelTriangles`. At this stage, you should only focus on reading in vertices (lines that being with a `v`) and faces/facets (lines that being with an `f`). We will deal with the other types of line later on in this workbook.
+
+Once a file has been loaded, loop through all of the triangles in the vector and print them out, (you should be able to send `ModelTriangles` to `cout` !) just to make sure they have all been successfully loaded.
+
+Add a scaling factor (float) parameter to the OBJ loading function that scales the position of all vertices at the point at which they are read in from the file. This is done in order to adjust the size of the model when it is loaded (different models will be created to different scales !). This is to avoid the "giant bunny" situation illustrated in the image below, where two models have been loaded in from separate files, but the model of the rabbit just happens to be of a particular large size.

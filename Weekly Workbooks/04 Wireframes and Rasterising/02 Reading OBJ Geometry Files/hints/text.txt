@@ -1,0 +1,7 @@
+To read in the data from the geometry file, you may like to make use of an `ifstream` and the `getline` function. A `split` function has also been provided (see the `Utils` class in libs/sdw) to make tokenising of lines easier. But it is really up to you how you parse in the files.
+
+Be careful - remember that faces in OBJ files are indexed from 1 (whereas vectors are indexed from 0).
+
+When loading in the Cornell Box model, we suggest you use a vertex scaling factor of 0.17 since this will bring the all dimensions of the vertices within the range of -1.0 to 1.0 (which seems sensible and logical).
+
+You should keep your parser as simple as possible - remember this unit is about graphical rendering, not parsing data. Only implement the aspects of the OBJ file format that you need to complete the task at hand. Your parser will not be marked - it is just a means to an end (to allow you to incorporate complex models and to provide you with familiarity of geometry storage and retrieval).

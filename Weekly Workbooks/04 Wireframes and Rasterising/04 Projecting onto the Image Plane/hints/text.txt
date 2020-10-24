@@ -1,0 +1,10 @@
+In the interests of consistency, you should adopt the convention that positive z is "out of the screen" (towards you) and negative z is "into the screen" (away from you).
+
+When implementing your renderer, you will find it useful to store the position of the camera in a `vec3` variable. Start by setting your camera position centred in the x and y dimensions, but "stepped back" a bit in the z (by 4.0). Your initial camera position should therefore be `(0.0, 0.0, 4.0)`
+
+You will also need to create a float variable to store the distance of the camera from the image plane (this is the "focal length" mentioned above). This you should initially set to `2.0` - which makes sense as this would position the image plane halfway between the camera and the model (anywhere else would be a bit crazy really !).
+
+You may find your initial vertex point cloud is a little small - feel free to apply an image plane multiplier to scale the coordinates up so that they fit nicely into the drawing window. Make sure you scale x and y by the same amount (in order to maintain the aspect ratio of the point cloud).
+
+You might find (depending on how you write your code) that your render is upside-down. Any ideas why this might be ?  
+Any thoughts about how to fix this problem ?  

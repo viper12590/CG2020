@@ -21,7 +21,8 @@ Let us start simply: create a duplicate of the _RedNoise_ template (giving the n
 - to: a floating point number to go up to
 - numberOfValues: the number of steps required from the start to the end
 
-This function should return an **evenly spaced** list (as a vector) of size _numberOfValues_ that contains floating point numbers that start at _from_ and ends at _to_.
+This function should return an **evenly spaced** list (as a vector) of size _numberOfValues_ that contains floating point numbers that start at _from_ and ends at _to_. See 
+<a href="https://www.tutorialspoint.com/cpp_standard_library/cpp_vector_push_back.htm" target="_blank">this tutorial</a> on using vectors in C++.
 
 So, for example, calling: `interpolateSingleFloats(2.2, 8.5, 7)` should return a vector containing the following values: `2.2, 3.25, 4.3, 5.35, 6.4, 7.45, 8.5`
 

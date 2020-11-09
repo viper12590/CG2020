@@ -104,11 +104,11 @@ The code that you will write in this workbook will be very resource intensive. I
 <p>You will not be able to test your function just yet. Write it as best you can for the moment, we will test it fully in a later task (when we have build more of the ray tracer). At which point you may have to return to this task to revise your <code>getClosestIntersection</code> function.</p>
 <p><strong>Hints &amp; Tips:</strong><br />
 To help you towards implementing your <code>getClosestIntersection</code> function, below is a code equivalent of the ray/triangle intersection equation that was shown in the slides at the top of this section:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a>vec3 e0 = triangle.vertices[<span class="dv">1</span>] - triangle.vertices[<span class="dv">0</span>];</span>
-<span id="cb1-2"><a href="#cb1-2"></a>vec3 e1 = triangle.vertices[<span class="dv">2</span>] - triangle.vertices[<span class="dv">0</span>];</span>
-<span id="cb1-3"><a href="#cb1-3"></a>vec3 SPVector = cameraPosition - triangle.vertices[<span class="dv">0</span>];</span>
-<span id="cb1-4"><a href="#cb1-4"></a>mat3 DEMatrix(-rayDirection, e0, e1);</span>
-<span id="cb1-5"><a href="#cb1-5"></a>vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a>glm::vec3 e0 = triangle.vertices[<span class="dv">1</span>] - triangle.vertices[<span class="dv">0</span>];</span>
+<span id="cb1-2"><a href="#cb1-2"></a>glm::vec3 e1 = triangle.vertices[<span class="dv">2</span>] - triangle.vertices[<span class="dv">0</span>];</span>
+<span id="cb1-3"><a href="#cb1-3"></a>glm::vec3 SPVector = cameraPosition - triangle.vertices[<span class="dv">0</span>];</span>
+<span id="cb1-4"><a href="#cb1-4"></a>glm::mat3 DEMatrix(-rayDirection, e0, e1);</span>
+<span id="cb1-5"><a href="#cb1-5"></a>glm::vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;</span></code></pre></div>
 <p>Remember that the <code>possibleSolution</code> calculated by the above code is <strong>not</strong> the [x,y,z] coordinates of a point in 3 dimensional space, but rather a three-element data structure that consists of:</p>
 <ul>
 <li><code>t</code> the distance along the ray from the camera to the intersection point</li>

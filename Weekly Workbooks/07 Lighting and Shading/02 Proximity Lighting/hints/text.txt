@@ -1,0 +1,7 @@
+Your brightness values should be within the range 0.0 (total darkness) to 1.0 (fully illuminated). These values can then be used as a multiplier to adjust the brightness of a pixel. Simply multiply each of the three colour channels (RGB) by the brightness float, before you pack them into the final 32 bit pixel colour.
+
+To find the distance between the light and a point on a triangle, you might like to make use of the GLM `length` function - this will give your the magnitude of a `vec3` variable. Don't normalise your `vec3` otherwise you'll always get a length of 1 !
+
+Your algorithm should be based on the 1/4&pi;r<sup>2</sup> approach outlined in the slides, however feel free to experiment with multipliers in order to produce an effect that you think looks appropriate (this is were aesthetics rule over science !)
+
+To help you implement and debug your code, you may wish to add some additional key event handlers that allow you to shift the position of your light source around the model.

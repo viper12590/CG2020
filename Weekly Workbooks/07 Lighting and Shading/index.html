@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>07 Lighting and Shading</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      word-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">07 Lighting and Shading</h1>
+</header>
+<h2 id="lighting-and-shading">Lighting and Shading</h2>
+<h3 id="weekly-briefing"><a href='https://web.microsoftstream.com/channel/b84051cb-1dba-4cb4-a271-60cc6635f92f' target='_blank'> Weekly Briefing <img src="../../resources/icons/briefing.png" /> </a></h3>
+<h3 id="task-1-introduction">Task 1: Introduction</h3>
+<p><a href='01%20Introduction/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='01%20Introduction/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='01%20Introduction/audio/segment-2.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='01%20Introduction/animation/segment-1.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a></p>
+<p>In this workbook we explore some of the more advanced aspects of model rendering. In particular, we will focus on the use of lighting and shadow effects to make our rendering more realistic and aesthetically appealing.</p>
+<p>In the slides and audio narration above, we introduce three distinct types of light as a convenient approximation to real-world lighting:</p>
+<ul>
+<li>Diffuse lighting (which can further be broken down into proximity and angle-of-incidence)</li>
+<li>Specular highlighting (to provide a sense of a shiny/reflective surface)</li>
+<li>Ambient lighting (as an approximation to global illumination)</li>
+</ul>
+<p>To aid your understanding of this topic, the animation above provides an illustration of the appearance and effect of each type of light. Ensure the you have an understanding of the overall concepts before moving on to the next task. In the following sections, we go on to explore the implementation of these different types of light in more detail.</p>
+<h1 id="section"></h1>
+<h3 id="task-2-proximity-lighting">Task 2: Proximity Lighting</h3>
+<p><a href='02%20Proximity%20Lighting/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='02%20Proximity%20Lighting/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='02%20Proximity%20Lighting/animation/segment-1.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a></p>
+<p>Proximity lighting takes into account the distance of a surface from a light source. Intuitively, the closer a surface is to a light, the brighter it will appear. Take a look at the slides, audio commentary and animation above to gain an appreciation of how we might go about calculating the effect of proximity lighting. Then add some code to your renderer that will adjust the brightness of each pixel to take into account proximity to the light source.</p>
+<p><strong>Hints &amp; Tips:</strong><br />
+Your brightness values should be within the range 0.0 (total darkness) to 1.0 (fully illuminated). These values can then be used as a multiplier to adjust the brightness of a pixel. Simply multiply each of the three colour channels (RGB) by the brightness float, before you pack them into the final 32 bit pixel colour.</p>
+<p>To find the distance between the light and a point on a triangle, you might like to make use of the GLM <code>length</code> function - this will give your the magnitude of a <code>vec3</code> variable. Don’t normalise your <code>vec3</code> otherwise you’ll always get a length of 1 !</p>
+<p>Your algorithm should be based on the 1/4πr<sup>2</sup> approach outlined in the slides, however feel free to experiment with multipliers in order to produce an effect that you think looks appropriate (this is were aesthetics rule over science !)</p>
+<p>To help you implement and debug your code, you may wish to add some additional key event handlers that allow you to shift the position of your light source around the model.</p>
+<h1 id="section-1"></h1>
+<h3 id="task-3-angle-of-incidence-lighting">Task 3: Angle of Incidence Lighting</h3>
+<p><a href='03%20Angle%20of%20Incidence%20Lighting/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='03%20Angle%20of%20Incidence%20Lighting/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='03%20Angle%20of%20Incidence%20Lighting/animation/segment-1.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a> <a href='03%20Angle%20of%20Incidence%20Lighting/animation/segment-2.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a> <a href='03%20Angle%20of%20Incidence%20Lighting/animation/segment-3.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a></p>
+<p>Your next task is to implement “Angle-of-Incidence” lighting. This first requires you to calculate a surface normal for each triangle in the model (as shown in the slides and audio narration above). To help achieve this, you might like to use the GLM <code>cross</code> function to calculate the cross product of two edges of a triangle.</p>
+<p>It is worth noting that the <code>ModelTriangle</code> class has a <code>normal</code> attribute that can be used to store the calculated normal for each triangle. You can calculate these normals when you first load in the OBJ geometry file - they aren’t going to change during the render (unless you start changing the orientation of triangles during some kind of animation).</p>
+<p>Once the surface normals have been calculated, you can then use these to calculate the angle of incidence of light falling onto the surfaces. This is done by taking the dot product of the normal and light direction vectors (as shown in the slides and audio narration above). To calculate dot products, you might like to use the <code>dot</code> function provided by GLM.</p>
+<p>Once calculated, use these angles of incidence to adjust the brightness of each pixel (in a similar way to that which you did with proximity in the previous task). You should end up with a render that looks like the image shown below. If you have implemented event handlers to move the position of your light point, use this feature to test that your lighting looks realistic from a number of different positions.</p>
+<p><img src="03%20Angle%20of%20Incidence%20Lighting%5Cimages%5Cdiffuse-lighting.png" /></p>
+<p><strong>Hints &amp; Tips:</strong><br />
+The “winding” order used by the model will impact how you should calculate the surface normals. The best advice is to just to assume a particular order and try it. You will soon know if you were wrong (all your surfaces will be dark) so you can then just switch to using the other winding order.</p>
+<p>When considering the angle that the light hits the surface…<br />
+you <strong>must</strong> use: <em>the direction vector of the LIGHT from the POINT ON THE SURFACE</em><br />
+and <strong>not</strong>: <em>the direction vector of the POINT ON THE SURFACE from the LIGHT</em><br />
+If you use the wrong one, you will end up lighting the back surface of your triangles !</p>
+<h1 id="section-2"></h1>
+<h3 id="task-4-specular-lighting">Task 4: Specular Lighting</h3>
+<p><a href='04%20Specular%20Lighting/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='04%20Specular%20Lighting/slides/segment-2.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='04%20Specular%20Lighting/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='04%20Specular%20Lighting/audio/segment-2.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a></p>
+<p>Your next task is to implement a “Specular” lighting effect (as illustrated in the introductory animation to this workbook). The slides and audio narration in this current section provide a description of specular light and how to calculate the brightness of specularly illuminated pixels.</p>
+<p>This process involves calculating the outgoing angle of reflection <code>R</code> of an incoming beam from the light. This in itself is more complex than you might initially think. For this reason, we have included an additional slide and audio narration in order to help you calculate this particular element. View these now if you haven’t done so already.</p>
+<p>When you are ready, implement a specular lighting effect in your renderer. As with the previous tasks, you should again make use of the GLM <code>dot</code> function, as well as the surfaces normals that you previously calculated. The image below provides some examples of the kinds of specular highlight you might expect to see:</p>
+<p><img src="04%20Specular%20Lighting%5Cimages%5Cvarious-exponents.jpg" /></p>
+<p><strong>Hints &amp; Tips:</strong><br />
+You should use a relatively large exponent in the calculation of specular spread (for example 256). This will ensure that you get a tightly focused spot/beam of specular light which will be easier to see (compared to a specular highlight with a wider spread).</p>
+<p>You may also need to move the light to an appropriate location in the scene in order to be able to see the specular highlight effect from the point-of-view of the camera.</p>
+<h1 id="section-3"></h1>
+<h3 id="task-5-ambient-lighting">Task 5: Ambient Lighting</h3>
+<p><a href='05%20Ambient%20Lighting/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='05%20Ambient%20Lighting/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a></p>
+<p>In the real world, light bounces off objects in order to illuminate “hard to reach” areas of a model (even areas that are in shadow). Calculating such “indirect” lighting is computationally expensive, however it is possible implement a plausible approximation to such lighting with very little additional effort.</p>
+<p>Two approaches to creating such ambient light level are commonly used: - Minimum threshold: An IF statement (or call to the <code>max</code> function) is used to ensure that the brightness of any point never falls below a certain threshold level. - Universal supplement: The brightness of a pixel is calculated, then a fixed amount of additional light is added (the same amount to each and every pixel).</p>
+<p>Each approach has its own subtle advantages and disadvantages, yet both can be used to achieve the desired effect as illustrated in the image below. Compare the shadow regions of this image with those of the previous week’s workbook (which included no ambient lighting).</p>
+<p><img src="05%20Ambient%20Lighting%5Cimages%5Cshadows-with-ambient.png" /></p>
+<h1 id="section-4"></h1>
+<h3 id="task-6-gouraud-shading">Task 6: Gouraud Shading</h3>
+<p><a href='06%20Gouraud%20Shading/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='06%20Gouraud%20Shading/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='06%20Gouraud%20Shading/audio/segment-2.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a> <a href='06%20Gouraud%20Shading/animation/segment-1.mp4' target='_blank'> <img src="../../resources/icons/animation.png" /> </a></p>
+<p>Due to the fact that we represent models as a series of triangles, any artefacts within that model will have a finite resolution. When rendering a model, unless we have a huge number of triangles, the surfaces may well appear “blocky” and “low-res”. But what if we could shade triangles more “intelligently” and blend their edges together ? That would smooth off the sharp corners and provide an apparently higher resolution final rendering ! <em>Gouraud shading</em> in one such intelligent approach to surface shading.</p>
+<p>View the slides and audio narration above to gain an understanding of Gouraud shading. Using this knowledge, implement Gouraud shading in you renderer. In order to achieve this, you will need to make use of <em>Barycentric coordinates</em> to interpolate the brightnesses across the face of each triangle. The operation of Barycentric coordinates is illustrated in the animation at the top of this section.</p>
+<p><strong>Hints &amp; Tips:</strong><br />
+The Cornell Box isn’t the most useful model for testing out Gouraud shading (it’s hard to smooth off the edges of a cube !). For this reason, we have provided a very simple <a href="models/sphere.obj" target="_blank">additional model</a> for you to use.</p>
+<h1 id="section-5"></h1>
+<h3 id="task-7-phong-shading">Task 7: Phong Shading</h3>
+<p><a href='07%20Phong%20Shading/slides/segment-1.pdf' target='_blank'> <img src="../../resources/icons/slides.png" /> </a> <a href='07%20Phong%20Shading/audio/segment-1.mp4' target='_blank'> <img src="../../resources/icons/audio.png" /> </a></p>
+<p>Gouraud shading in fine, but it only goes so far in creating smoothly rendered model surfaces. <em>Phong shading</em> is a more sophisticated approach that takes shading one step further (although it can only achieve this at the cost of additional computational overhead !). Take a look at the slides and audio narration above to gain an understanding of Phong Shading. Adapt your renderer to make use of this more sophisticated approach.</p>
+<h1 id="section-6"></h1>
+<h3 id="progress-logbook">Progress Logbook</h3>
+<p>It is important to be able to monitor the progress of students as they progress through these workbooks. This is to ensure that everyone is keeping up to date with the work and to identify students who are struggling. For these reasons, it is <strong>ESSENTIAL</strong> that you keep a logbook of progress that you are making. To minimise the overhead in keeping this logbook, you are only required to capture a single screenshot each week (you only need to include the DrawingWindow, not the whole desktop). Try to capture something that summarises the progress that you have made and upload this onto the <a href="https://www.ole.bris.ac.uk/webapps/assignment/uploadAssignment?content_id=_4837989_1&amp;course_id=_240795_1&amp;group_id=&amp;mode=cpview">logbook submission area on blackboard</a>. (Note: you might have to log into blackboard <em>first</em> before your click on this link !). It is important that <strong>EVERYBODY</strong> uploads an image (so we can be sure that everyone is engaging with the unit). If you don’t keep your logbook up to date then you’ll find us getting in touch to see if everything is OK !</p>
+</body>
+</html>

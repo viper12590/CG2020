@@ -1,0 +1,3 @@
+You should use a relatively large exponent in the calculation of specular spread (for example 256). This will ensure that you get a tightly focused spot/beam of specular light which will be easier to see (compared to a specular highlight with a wider spread).
+
+You may also need to move the light to an appropriate location in the scene in order to be able to see the specular highlight effect from the point-of-view of the camera.

@@ -112,7 +112,9 @@ The Cornell Box isn't the most useful model for testing out Gouraud shading (it'
 ### Task 7: Phong Shading
  <a href='07%20Phong%20Shading/slides/segment-1.pdf' target='_blank'> ![](../../resources/icons/slides.png) </a> <a href='07%20Phong%20Shading/audio/segment-1.mp4' target='_blank'> ![](../../resources/icons/audio.png) </a>
 
-Gouraud shading in fine, but it only goes so far in creating smoothly rendered model surfaces. _Phong shading_ is a more sophisticated approach that takes shading one step further (although it can only achieve this at the cost of additional computational overhead !). Take a look at the slides and audio narration above to gain an understanding of Phong Shading. Adapt your renderer to make use of this more sophisticated approach.  
+Gouraud shading in fine, but it only goes so far in creating smoothly rendered model surfaces. _Phong shading_ is a more sophisticated approach that takes shading one step further (although it can only achieve this at the cost of additional computational overhead !). Take a look at the slides and audio narration above to gain an understanding of Phong Shading. Adapt your renderer to make use of this more sophisticated approach.
+
+Note that the audio narration makes reference to the concept of "bump maps" (which you may wish to explore in the assignment). We mention them here in order to link this concept into the discussion on Gouraud shading.  
 
 
 # 

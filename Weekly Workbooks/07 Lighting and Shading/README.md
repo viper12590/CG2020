@@ -47,7 +47,7 @@ Once calculated, use these angles of incidence to adjust the brightness of each 
   
 
 
-![](03%20Angle%20of%20Incidence%20Lighting%5Cimages%5Cdiffuse-lighting.png)
+![](03%20Angle%20of%20Incidence%20Lighting/images/diffuse-lighting.png)
 
 **Hints & Tips:**  
 The "winding" order used by the model will impact how you should calculate the surface normals. The best advice is to just to assume a particular order and try it. You will soon know if you were wrong (all your surfaces will be dark) so you can then just switch to using the other winding order.
@@ -70,7 +70,7 @@ This process involves calculating the outgoing angle of reflection `R` of an inc
 When you are ready, implement a specular lighting effect in your renderer. As with the previous tasks, you should again make use of the GLM `dot` function, as well as the surfaces normals that you previously calculated. The image below provides some examples of the kinds of specular highlight you might expect to see:  
 
 
-![](04%20Specular%20Lighting%5Cimages%5Cvarious-exponents.jpg)
+![](04%20Specular%20Lighting/images/various-exponents.jpg)
 
 **Hints & Tips:**  
 You should use a relatively large exponent in the calculation of specular spread (for example 256). This will ensure that you get a tightly focused spot/beam of specular light which will be easier to see (compared to a specular highlight with a wider spread).
@@ -91,7 +91,7 @@ Two approaches to creating such ambient light level are commonly used:
 Each approach has its own subtle advantages and disadvantages, yet both can be used to achieve the desired effect as illustrated in the image below. Compare the shadow regions of this image with those of the previous week's workbook (which included no ambient lighting).  
 
 
-![](05%20Ambient%20Lighting%5Cimages%5Cshadows-with-ambient.png)
+![](05%20Ambient%20Lighting/images/shadows-with-ambient.png)
 
 # 
 ### Task 6: Gouraud Shading

@@ -1,0 +1,1 @@
+Up until this point we have taken a simplistic approach to shadows. By only considering single point light sources we can only produce naive and simplistic "hard" shadows. If we want to implement more realistic "soft" shadows we are going to need a more sophisticated approach using multi-point light sources.

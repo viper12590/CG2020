@@ -1,0 +1,1 @@
+Finding the closest intersection between a ray and a set of triangles is a costly activity (especially with complex models containing many triangles). But what if we were able to create "fake" geometry using just "light & shadows" (and only a minimal number of actual triangles). Sounds like magic ? But bump maps allow us to do just that.

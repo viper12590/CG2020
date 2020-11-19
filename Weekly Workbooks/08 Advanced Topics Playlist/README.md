@@ -33,7 +33,7 @@ Rather than rendering just opaque, matt surfaces, it would be nice if we could r
 ### Task 5: Environment Maps
  <a href='05%20Environment%20Maps/slides/segment-1.pdf' target='_blank'> ![](../../resources/icons/slides.png) </a> <a href='05%20Environment%20Maps/audio/segment-1.mp4' target='_blank'> ![](../../resources/icons/audio.png) </a>
 
-The problem with rendering mirrored surfaces is that they reflect everything that surrounds them ! This can make rendering complex scenes particularly costly. We can use flat images in the form of "Environment Maps" to capture a view of the surrounding area from the perspective of a 3D object. Because these maps are flat images (rather than 3D models in there own right) this can make the computation of reflections much more efficient.
+The problem with rendering mirrored surfaces is that they reflect everything that surrounds them ! This can make rendering complex scenes particularly costly. We can use flat images in the form of "Environment Maps" to capture a view of the surrounding area from the perspective of a 3D object. Because these maps are flat images (rather than 3D models in their own right) this can make the computation of reflections much more efficient.
   
 
 

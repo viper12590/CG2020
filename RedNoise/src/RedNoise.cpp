@@ -364,16 +364,14 @@ CanvasTriangle getRandomTriangle() {
 	return triangle;
 }
 
-void drawModelTriangle(DrawingWindow &window, std::pair<ModelTriangle, Material> pair) {
-	ModelTriangle triangle = pair.first;
-	Material material = pair.second;
 
+CanvasTriangle getCanvasTriangle(ModelTriangle triangle) {
 	std::vector<glm::vec3> renderPos;
 	for(int i=0; i < triangle.vertices.size(); i++) {
 		glm::vec3 vertex = triangle.vertices[i] - camera.pos;
 		vertex = camera.rot * vertex;
-		float u = glm::floor(-1*camera.f*(vertex.x / vertex.z)*(HEIGHT*1.5)+ WIDTH/2);
-		float v = glm::floor(camera.f*(vertex.y / vertex.z)*(HEIGHT*1.5) + HEIGHT/2);
+		float u = glm::floor(-camera.f*(vertex.x / vertex.z)*WIDTH + WIDTH/2);
+		float v = glm::floor(camera.f*(vertex.y / vertex.z)*WIDTH + HEIGHT/2);
 		float Z = INFINITY;
 		
 		if(vertex.z != 0.0) {
@@ -381,8 +379,13 @@ void drawModelTriangle(DrawingWindow &window, std::pair<ModelTriangle, Material>
 		}
 		renderPos.push_back(glm::vec3(u, v, Z));
 	}
-	CanvasTriangle transposedTri = CanvasTriangle(CanvasPoint(renderPos[0].x, renderPos[0].y, renderPos[0].z), CanvasPoint(renderPos[1].x, renderPos[1].y, renderPos[1].z) ,CanvasPoint(renderPos[2].x, renderPos[2].y, renderPos[2].z));
-	//give depth here?^
+	return CanvasTriangle(CanvasPoint(renderPos[0].x, renderPos[0].y, renderPos[0].z),CanvasPoint(renderPos[1].x, renderPos[1].y, renderPos[1].z) ,CanvasPoint(renderPos[2].x, renderPos[2].y, renderPos[2].z));			
+}
+
+void drawModelTriangle(DrawingWindow &window, std::pair<ModelTriangle, Material> pair) {
+	ModelTriangle triangle = pair.first;
+	Material material = pair.second;
+	CanvasTriangle transposedTri = getCanvasTriangle(triangle);
 
 	if(material.texturePath.empty()) {
 		drawFilledTriangle(window, transposedTri, triangle.colour, triangle.colour);
@@ -581,21 +584,7 @@ void draw(DrawingWindow &window) {
 			for(int i=0; i < pairs.size(); i++) {
 				ModelTriangle triangle = pairs[i].first;
 				Material material = pairs[i].second;
-
-				std::vector<glm::vec3> renderPos;
-				for(int i=0; i < triangle.vertices.size(); i++) {
-					glm::vec3 vertex = triangle.vertices[i] - camera.pos;
-					vertex = camera.rot * vertex;
-					float u = glm::floor(-1*camera.f*(vertex.x / vertex.z)*(HEIGHT*1.5)+ WIDTH/2);
-					float v = glm::floor(camera.f*(vertex.y / vertex.z)*(HEIGHT*1.5) + HEIGHT/2);
-					float Z = INFINITY;
-					
-					if(vertex.z != 0.0) {
-						Z = glm::abs(1 / vertex.z);
-					}
-					renderPos.push_back(glm::vec3(u, v, Z));
-				}
-				CanvasTriangle transposedTri = CanvasTriangle(CanvasPoint(renderPos[0].x, renderPos[0].y, renderPos[0].z), CanvasPoint(renderPos[1].x, renderPos[1].y, renderPos[1].z) ,CanvasPoint(renderPos[2].x, renderPos[2].y, renderPos[2].z));
+				CanvasTriangle transposedTri = getCanvasTriangle(triangle);
 				drawTriangle(window,transposedTri,material.colour);
 			}
 			break;

@@ -14,3 +14,7 @@ std::ostream &operator<<(std::ostream &os, const Colour &colour) {
 	   << colour.blue << "]";
 	return os;
 }
+
+uint32_t Colour::toHex(int alpha) {
+	return (alpha << 24) + (Colour::red << 16) + (Colour::green << 8) + Colour::blue;
+}

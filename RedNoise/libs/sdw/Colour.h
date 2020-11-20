@@ -10,6 +10,7 @@ struct Colour {
 	Colour();
 	Colour(int r, int g, int b);
 	Colour(std::string n, int r, int g, int b);
+	uint32_t toHex(int alpha);
 };
 
 std::ostream &operator<<(std::ostream &os, const Colour &colour);

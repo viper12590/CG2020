@@ -75,6 +75,7 @@ std::vector<CanvasPoint> interpolateVector(CanvasPoint from, CanvasPoint to, int
 	glm::vec3 intervals = (glm::vec3(to.x,to.y,to.depth) - glm::vec3(from.x,from.y,from.depth)) / (float)(numberOfValues);
 	for(int i = 0; i < numberOfValues; i++) {
 		glm::vec3 result = glm::vec3(from.x, from.y, from.depth) + (float)i*intervals;
+		//for debugging
 		if(glm::isnan(result.x)) {
 			std::cout << "nan intervals: " << intervals.x << " num: " << numberOfValues << " to.x: "<< to.x << " from.x: " << from.x << std::endl;
 			std::cout << "from.y: " << from.y << " to.y: " << to.y << std::endl;
@@ -86,9 +87,9 @@ std::vector<CanvasPoint> interpolateVector(CanvasPoint from, CanvasPoint to, int
 	return values;
 }
 
-uint32_t colourPack(Colour colour, int alpha) {
-	return (alpha << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
-}
+// uint32_t colourPack(Colour colour, int alpha) {
+// 	return (alpha << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
+// }
 
 void drawLine(DrawingWindow &window, CanvasPoint from, CanvasPoint to, Colour colour) {
 	glm::vec3 src(from.x, from.y, from.depth);
@@ -106,11 +107,11 @@ void drawLine(DrawingWindow &window, CanvasPoint from, CanvasPoint to, Colour co
 		}
 		if(pixel.z == 0) {
 			ZBuffer[X][Y] = pixel.z;
-			window.setPixelColour(X, Y, colourPack(colour, 0xFF));
+			window.setPixelColour(X, Y, colour.toHex(0xFF));
 		}
 		else if(pixel.z > (ZBuffer[X][Y])) {
 			ZBuffer[X][Y] = pixel.z;
-			window.setPixelColour(X, Y, colourPack(colour, 0xFF));
+			window.setPixelColour(X, Y, colour.toHex(0xFF));
 		}
 	}
 }
@@ -472,7 +473,7 @@ void rayTracing(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Mater
 					window.setPixelColour(u,v,0xFF000000);
 				}
 				else {
-					window.setPixelColour(u,v,colourPack(closestMat.colour,0xFF));
+					window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
 				}
 			}
 		}

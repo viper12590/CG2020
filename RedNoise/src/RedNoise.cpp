@@ -502,13 +502,17 @@ glm::mat3 lookAt(glm::vec3 source, glm::vec3 target) {
 	return glm::transpose(glm::mat3(right, up, forward));
 }
 
+bool triangleEqual(ModelTriangle triangle1, ModelTriangle triangle2) {
+	return triangle1.vertices[0] == triangle2.vertices[0] && triangle1.vertices[1] == triangle2.vertices[1] && triangle1.vertices[2] == triangle2.vertices[2];
+}
+
 bool shadowRay(int u, int v, std::vector<std::pair<ModelTriangle,Material>> pairs, RayTriangleIntersection intersection, glm::vec3 light) {
 	glm::vec3 worldSpaceCanvasPixel = intersection.intersectionPoint;
 	glm::vec3 rayDirection = glm::normalize((light - worldSpaceCanvasPixel));
 	bool isShadow = false;
 	for(int i=0; i < pairs.size(); i++) {
 		ModelTriangle triangle = pairs[i].first;
-		if(triangle.vertices[0] != intersection.intersectedTriangle.vertices[0] || triangle.vertices[1] != intersection.intersectedTriangle.vertices[1] || triangle.vertices[2] != intersection.intersectedTriangle.vertices[2]) {
+		if(!triangleEqual(triangle,intersection.intersectedTriangle)) {
 
 			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, worldSpaceCanvasPixel, rayDirection);
 			if(isValidIntersection(tuvVector) && tuvVector[0] < glm::length(light - worldSpaceCanvasPixel)) {

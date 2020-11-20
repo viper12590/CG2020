@@ -40,7 +40,6 @@ Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
 glm::vec3 lightSource;
 
-
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
 
@@ -221,7 +220,7 @@ CanvasPoint calcExtraTexturePoint(std::vector<CanvasPoint> rCanvas, std::vector<
 	return CanvasPoint(rTexture[0].x + tTopToExtra.x, rTexture[0].y + tTopToExtra.y, rTexture[0].depth + tTopToExtra.z);
 }
 
-
+//!!!REFACTOR THIS!!!
 void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, std::string path) {
 	TextureMap texture(path);
 	std::vector<CanvasPoint> initCanvasPoints({triangle.v0(),triangle.v1(),triangle.v2()});
@@ -430,7 +429,23 @@ bool shadowRay(int u, int v, std::vector<std::pair<ModelTriangle,Material>> pair
 	return isShadow;
 }
 
-void rayTracing(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs, float scale) {
+
+void wireframeRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
+	for(int i=0; i < modelPairs.size(); i++) {
+		ModelTriangle triangle = modelPairs[i].first;
+		Material material = modelPairs[i].second;
+		CanvasTriangle transposedTri = getCanvasTriangle(triangle);
+		drawTriangle(window,transposedTri,material.colour);
+	}
+}
+
+void rasterisingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
+	for(int i=0; i < modelPairs.size(); i++) {
+		drawModelTriangle(window, modelPairs[i]);
+	}
+}
+
+void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {
 	for(int u = 0; u < WIDTH; u++) {
 		for(int v = 0; v < HEIGHT; v++) {
 			glm::vec3 cameraSpaceCanvasPixel((u - WIDTH/2), (HEIGHT/2 - v), -camera.f*WIDTH);
@@ -448,7 +463,7 @@ void rayTracing(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Mater
 					intersections.push_back(intersection);
 					materials.push_back(material);
 				}
-			}
+			}//Refactor needed here
 			if(!intersections.empty()) {
 				
 				RayTriangleIntersection closest = intersections[0];
@@ -471,7 +486,6 @@ void rayTracing(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Mater
 	
 	}
 }
-
 
 void handleEvent(SDL_Event event, DrawingWindow &window) {
 	if (event.type == SDL_KEYDOWN) {
@@ -573,20 +587,13 @@ void draw(DrawingWindow &window) {
 	window.clearPixels();
 	switch (renderMode) {
 		case WIREFRAME:
-			for(int i=0; i < pairs.size(); i++) {
-				ModelTriangle triangle = pairs[i].first;
-				Material material = pairs[i].second;
-				CanvasTriangle transposedTri = getCanvasTriangle(triangle);
-				drawTriangle(window,transposedTri,material.colour);
-			}
+			wireframeRender(window, pairs);
 			break;
 		case RASTERIZING:
-			for(int i=0; i < pairs.size(); i++) {
-				drawModelTriangle(window, pairs[i]);
-			}
+			rasterisingRender(window,pairs);
 			break;
 		case RAYTRACING:
-			rayTracing(window, pairs, 750.0);
+			raytracingRender(window, pairs);
 			break;
 		default:
 			break;
@@ -611,7 +618,6 @@ void orbit() {
 // Function for performing animation (shifting artifacts or moving the camera)
 void update(DrawingWindow &window) {
 	if(orbitMode) orbit();
-
 }
 
 

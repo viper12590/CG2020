@@ -25,7 +25,7 @@ bool orbitMode = false;
 
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 
-RenderMode renderMode = RASTERIZING;
+RenderMode renderMode = WIREFRAME;
 
 class Camera {
 	public:
@@ -86,10 +86,6 @@ std::vector<CanvasPoint> interpolateVector(CanvasPoint from, CanvasPoint to, int
 
 	return values;
 }
-
-// uint32_t colourPack(Colour colour, int alpha) {
-// 	return (alpha << 24) + (colour.red << 16) + (colour.green << 8) + colour.blue;
-// }
 
 void drawLine(DrawingWindow &window, CanvasPoint from, CanvasPoint to, Colour colour) {
 	glm::vec3 src(from.x, from.y, from.depth);

@@ -15,27 +15,16 @@
 #include "RayTriangleIntersection.h"
 #include <glm/gtx/string_cast.hpp>
 #include "ObjLoader.h"
+#include "Camera.h"
 
 #define WIDTH 600
 #define HEIGHT 400
 
 std::vector<std::vector<float>> ZBuffer;
 std::vector<std::pair<ModelTriangle, Material>> pairs;
-bool orbitMode = false;
-
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
-
 RenderMode renderMode = WIREFRAME;
-
-class Camera {
-	public:
-		glm::vec3 pos = glm::vec3(0.0, 0.0, 4.0);
-		glm::mat3 rot = glm::mat3(1.0);
-		float f = 2.0;
-		float speed = 0.05;
-		double rSpeed = glm::radians(0.5);
-};
-
+bool orbitMode = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
 glm::vec3 lightSource;

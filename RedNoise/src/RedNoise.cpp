@@ -594,9 +594,6 @@ void draw(DrawingWindow &window) {
 	//Render light source position
 	glm::vec3 vertex = lightSource - camera.pos;
 	vertex = camera.rot * vertex;
-	float u = glm::floor(-1*camera.f*(vertex.x / vertex.z)*(HEIGHT*1.5)+ WIDTH/2);
-	float v = glm::floor(camera.f*(vertex.y / vertex.z)*(HEIGHT*1.5) + HEIGHT/2);
-	window.setPixelColour(u,v,0xFFFF0000);
 	//window.setPixelColour(432,39,0x00FF0000);
 	
 }

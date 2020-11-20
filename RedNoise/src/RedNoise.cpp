@@ -37,10 +37,9 @@ class Camera {
 };
 
 Camera camera;
-
+glm::vec3 CENTER(0.0,0.0,0.0);
 glm::vec3 lightSource;
 
-std::vector<ModelTriangle> lightSourceModels;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -403,13 +402,6 @@ void drawModelTriangle(DrawingWindow &window, std::pair<ModelTriangle, Material>
 	}
 }
 
-glm::mat3 lookAt() {
-	glm::vec3 forward = glm::normalize(camera.pos);
-	glm::vec3 right = -glm::normalize(glm::cross(forward, glm::vec3(0,1,0)));
-	glm::vec3 up = -glm::normalize(glm::cross(forward, -right));
-	return glm::transpose(glm::mat3(right, up, forward));
-}
-
 glm::mat3 lookAt(glm::vec3 source, glm::vec3 target) {
 	glm::vec3 forward = glm::normalize(source - target);
 	glm::vec3 right = -glm::normalize(glm::cross(forward, glm::vec3(0,1,0)));
@@ -552,7 +544,7 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		}
 		else if (event.key.keysym.sym == SDLK_SPACE) {
 			std::cout << "look at the center" << std::endl;
-			camera.rot = lookAt();
+			camera.rot = lookAt(camera.pos, CENTER);
 		}
 		else if(event.key.keysym.sym == SDLK_m) {
 			std::cout << "Rasterizing" << std::endl;
@@ -617,7 +609,7 @@ void orbit() {
 	float newX = radius*glm::cos(theta);
 	float newZ = radius*glm::sin(theta);
 	camera.pos = glm::vec3(newX, camera.pos.y, newZ);
-	camera.rot = lookAt();
+	camera.rot = lookAt(camera.pos, CENTER);
 }
 // Function for performing animation (shifting artifacts or moving the camera)
 void update(DrawingWindow &window) {

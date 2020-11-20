@@ -492,10 +492,10 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if (event.key.keysym.sym == SDLK_DOWN) {
 			camera.pos = glm::vec3(camera.pos.x, camera.pos.y, camera.pos.z + camera.speed);
 		}
-		else if (event.key.keysym.sym == SDLK_LSHIFT) {
+		else if (event.key.keysym.sym == SDLK_x) {
 			camera.pos = glm::vec3(camera.pos.x, camera.pos.y  + camera.speed, camera.pos.z);
 		}
-		else if (event.key.keysym.sym == SDLK_LCTRL) {
+		else if (event.key.keysym.sym == SDLK_z) {
 			camera.pos = glm::vec3(camera.pos.x, camera.pos.y  - camera.speed, camera.pos.z);
 		}
 		else if (event.key.keysym.sym == SDLK_w) {
@@ -551,28 +551,6 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 			std::cout << "look at the center" << std::endl;
 			camera.rot = lookAt();
 		}
-		else if (event.key.keysym.sym == SDLK_u) {
-			std::cout << "u" << std::endl;
-			drawTriangle(window,getRandomTriangle(),Colour(rand() % 255, rand() % 255, rand() % 255));
-		}
-		else if (event.key.keysym.sym == SDLK_f) {
-			std::cout << "f" << std::endl;
-			drawFilledTriangle(window,getRandomTriangle(),Colour(0xFF,0xFF,0xFF),Colour(rand() % 255, rand() % 255, rand() % 255));
-		}
-		else if(event.key.keysym.sym == SDLK_t) {
-			std::cout << "t" << std::endl;
-			CanvasPoint p0(160.0,10.0);
-			CanvasPoint p1(300.0,230.0);
-			CanvasPoint p2(10.0,150.0);
-
-			p0.texturePoint = TexturePoint(195.0, 5.0);
-			p1.texturePoint = TexturePoint(396.0, 380.0);
-			p2.texturePoint = TexturePoint(65.0, 330.0);
-			
-			CanvasTriangle textureTriangle(p0,p1,p2);
-			drawTexturedTriangle(window, textureTriangle, "texture.ppm");
-			drawTriangle(window, textureTriangle,Colour(0xFF,0xFF,0xFF));
-		}
 		else if(event.key.keysym.sym == SDLK_m) {
 			std::cout << "Rasterizing" << std::endl;
 			renderMode = RASTERIZING;
@@ -598,40 +576,39 @@ void draw(DrawingWindow &window) {
 		}
 	}
 	window.clearPixels();
-	switch (renderMode)
-	{
-	case WIREFRAME:
-		for(int i=0; i < pairs.size(); i++) {
-			ModelTriangle triangle = pairs[i].first;
-			Material material = pairs[i].second;
+	switch (renderMode) {
+		case WIREFRAME:
+			for(int i=0; i < pairs.size(); i++) {
+				ModelTriangle triangle = pairs[i].first;
+				Material material = pairs[i].second;
 
-			std::vector<glm::vec3> renderPos;
-			for(int i=0; i < triangle.vertices.size(); i++) {
-				glm::vec3 vertex = triangle.vertices[i] - camera.pos;
-				vertex = camera.rot * vertex;
-				float u = glm::floor(-1*camera.f*(vertex.x / vertex.z)*(HEIGHT*1.5)+ WIDTH/2);
-				float v = glm::floor(camera.f*(vertex.y / vertex.z)*(HEIGHT*1.5) + HEIGHT/2);
-				float Z = INFINITY;
-				
-				if(vertex.z != 0.0) {
-					Z = glm::abs(1 / vertex.z);
+				std::vector<glm::vec3> renderPos;
+				for(int i=0; i < triangle.vertices.size(); i++) {
+					glm::vec3 vertex = triangle.vertices[i] - camera.pos;
+					vertex = camera.rot * vertex;
+					float u = glm::floor(-1*camera.f*(vertex.x / vertex.z)*(HEIGHT*1.5)+ WIDTH/2);
+					float v = glm::floor(camera.f*(vertex.y / vertex.z)*(HEIGHT*1.5) + HEIGHT/2);
+					float Z = INFINITY;
+					
+					if(vertex.z != 0.0) {
+						Z = glm::abs(1 / vertex.z);
+					}
+					renderPos.push_back(glm::vec3(u, v, Z));
 				}
-				renderPos.push_back(glm::vec3(u, v, Z));
+				CanvasTriangle transposedTri = CanvasTriangle(CanvasPoint(renderPos[0].x, renderPos[0].y, renderPos[0].z), CanvasPoint(renderPos[1].x, renderPos[1].y, renderPos[1].z) ,CanvasPoint(renderPos[2].x, renderPos[2].y, renderPos[2].z));
+				drawTriangle(window,transposedTri,material.colour);
 			}
-			CanvasTriangle transposedTri = CanvasTriangle(CanvasPoint(renderPos[0].x, renderPos[0].y, renderPos[0].z), CanvasPoint(renderPos[1].x, renderPos[1].y, renderPos[1].z) ,CanvasPoint(renderPos[2].x, renderPos[2].y, renderPos[2].z));
-			drawTriangle(window,transposedTri,material.colour);
-		}
-		break;
-	case RASTERIZING:
-		for(int i=0; i < pairs.size(); i++) {
-			drawModelTriangle(window, pairs[i]);
-		}
-		break;
-	case RAYTRACING:
-		rayTracing(window, pairs, 750.0);
-		break;
-	default:
-		break;
+			break;
+		case RASTERIZING:
+			for(int i=0; i < pairs.size(); i++) {
+				drawModelTriangle(window, pairs[i]);
+			}
+			break;
+		case RAYTRACING:
+			rayTracing(window, pairs, 750.0);
+			break;
+		default:
+			break;
 	}
 	//Render light source position
 	glm::vec3 vertex = lightSource - camera.pos;

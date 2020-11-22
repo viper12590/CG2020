@@ -16,6 +16,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include "ObjLoader.h"
 #include "Camera.h"
+#include "LightSource.h"
 
 #define WIDTH 600
 #define HEIGHT 400
@@ -27,7 +28,7 @@ RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
-glm::vec3 lightSource;
+LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),10.0);
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -490,8 +491,8 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
-				float brightness = getProximityBrightness(closest,lightSource,10.0);
-				float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
+				float brightness = getProximityBrightness(closest,lightSource.pos,10.0);
+				float angleOfIncidence = getAngleOfIncidence(closest,lightSource.pos);
 				float lightingEffects = brightness*angleOfIncidence;
 				closestMat.colour.red *= lightingEffects;
 				closestMat.colour.green *= lightingEffects;
@@ -499,7 +500,7 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 				window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
 				for(int i = 0; i < pairs.size(); i++) {
 					ModelTriangle triangle = pairs[i].first;
-					if(shadowRay(u,v,triangle,closest,lightSource)) {
+					if(shadowRay(u,v,triangle,closest,lightSource.pos)) {
 						window.setPixelColour(u,v,0xFF000000);
 						break;	
 					}
@@ -599,16 +600,16 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 			renderMode = WIREFRAME;
 		}
 		else if(event.key.keysym.sym == SDLK_h) {
-			lightSource.y -= 0.01;
+			lightSource.pos.y -= 0.01;
 		}
 		else if(event.key.keysym.sym == SDLK_y) {
-			lightSource.y += 0.01;
+			lightSource.pos.y += 0.01;
 		}
 		else if(event.key.keysym.sym == SDLK_g) {
-			lightSource.x -= 0.01;
+			lightSource.pos.x -= 0.01;
 		}
 		else if(event.key.keysym.sym == SDLK_j) {
-			lightSource.x += 0.01;
+			lightSource.pos.x += 0.01;
 		}
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) window.savePPM("output.ppm");
 }
@@ -634,7 +635,7 @@ void draw(DrawingWindow &window) {
 			break;
 	}
 	//Render light source position
-	glm::vec3 vertex = lightSource - camera.pos;
+	glm::vec3 vertex = lightSource.pos - camera.pos;
 	vertex = camera.rot * vertex;
 	//window.setPixelColour(432,39,0x00FF0000);
 	
@@ -670,7 +671,6 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; i < pairs.size(); i++) {
 		pairs[i].first.normal = getNormalOfTriangle(pairs[i].first);
 	}
-	lightSource = glm::vec3(0.0, 0.36, 0.1);
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;

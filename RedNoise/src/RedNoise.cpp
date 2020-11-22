@@ -28,7 +28,7 @@ RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
-LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),10.0);
+LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),100000.0);
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -446,6 +446,25 @@ float getAngleOfIncidence(RayTriangleIntersection intersection, LightSource ligh
 	return angle;
 }
 
+glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, LightSource light) {
+	glm::vec3 normal = intersection.intersectedTriangle.normal;
+	glm::vec3 lightDirection = glm::normalize(light.pos - intersection.intersectionPoint);
+	return lightDirection - 2.0f*normal*(glm::dot(lightDirection,normal));
+}
+
+float getSpecularSpread(RayTriangleIntersection intersection, Camera view, LightSource light, int shininess) {
+	glm::vec3 viewDirection = glm::normalize(view.pos - intersection.intersectionPoint);
+	glm::vec3 reflection = getVectorOfReflection(intersection,light);
+	float spread = glm::pow(glm::dot(viewDirection,reflection),shininess);
+	if(spread > 1.0) {
+		spread = 1.0;
+	}
+	else if(spread < 0.0) {
+		spread = 0.0;
+	}
+	return spread;
+}
+
 
 void wireframeRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
 	for(int i=0; i < modelPairs.size(); i++) {
@@ -493,15 +512,21 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 				}
 				float brightness = getProximityBrightness(closest,lightSource);
 				float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
-				float lightingEffects = brightness * angleOfIncidence;
+				float specular = getSpecularSpread(closest,camera,lightSource,2);
+				float lightingEffects = glm::max((brightness * angleOfIncidence * specular),0.2f);
 				closestMat.colour.red *= lightingEffects;
 				closestMat.colour.green *= lightingEffects;
 				closestMat.colour.blue *= lightingEffects;
+
 				window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
+
 				for(int i = 0; i < pairs.size(); i++) {
 					ModelTriangle triangle = pairs[i].first;
 					if(shadowRay(u,v,triangle,closest,lightSource.pos)) {
-						window.setPixelColour(u,v,0xFF000000);
+						closestMat.colour.red *= 0.8;
+						closestMat.colour.green *= 0.8;
+						closestMat.colour.blue *= 0.8;
+						window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
 						break;	
 					}
 				}

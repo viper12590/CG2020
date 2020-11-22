@@ -404,14 +404,17 @@ bool triangleEqual(ModelTriangle triangle1, ModelTriangle triangle2) {
 bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection intersection, glm::vec3 light) {
 	glm::vec3 worldSpaceCanvasPixel = intersection.intersectionPoint;
 	glm::vec3 rayDirection = glm::normalize((light - worldSpaceCanvasPixel));
-	bool isShadow = false;
 	if(!triangleEqual(triangle,intersection.intersectedTriangle)) {
 		glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, worldSpaceCanvasPixel, rayDirection);
 		if(isValidIntersection(tuvVector) && tuvVector[0] < glm::length(light - worldSpaceCanvasPixel)) {
-			isShadow = true;
+			return true;
 		}
 	}
-	return isShadow;
+	return false;
+}
+
+float getProximityBrightness() {
+	return 1.0;
 }
 
 
@@ -459,6 +462,10 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
+				float brightness = getProximityBrightness();
+				closestMat.colour.red *= brightness;
+				closestMat.colour.green *= brightness;
+				closestMat.colour.blue *= brightness;
 				window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
 				for(int i = 0; i < pairs.size(); i++) {
 					ModelTriangle triangle = pairs[i].first;

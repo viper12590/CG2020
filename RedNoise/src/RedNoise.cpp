@@ -414,9 +414,9 @@ bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection int
 	return false;
 }
 
-float getProximityBrightness(RayTriangleIntersection intersection, glm::vec3 light, float intensity) {
-	float distance = glm::abs(glm::length(light - intersection.intersectionPoint));
-	float brightness = intensity*1.0/(4*glm::pi<float>()*distance*distance);
+float getProximityBrightness(RayTriangleIntersection intersection, LightSource light) {
+	float distance = glm::abs(glm::length(light.pos - intersection.intersectionPoint));
+	float brightness = lightSource.intensity * 1.0/(4*glm::pi<float>()*distance*distance);
 	if(brightness > 1.0) {
 		brightness = 1.0;
 	}
@@ -433,9 +433,9 @@ glm::vec3 getNormalOfTriangle(ModelTriangle triangle) {
 	return normal;
 }
 
-float getAngleOfIncidence(RayTriangleIntersection intersection, glm::vec3 light) {
+float getAngleOfIncidence(RayTriangleIntersection intersection, LightSource light) {
 	glm::vec3 normal = intersection.intersectedTriangle.normal;
-	glm::vec3 lightDirection = glm::normalize(light - intersection.intersectionPoint);
+	glm::vec3 lightDirection = glm::normalize(light.pos - intersection.intersectionPoint);
 	float angle = glm::dot(normal,lightDirection);
 	if(angle > 1.0) {
 		angle = 1.0;
@@ -491,9 +491,9 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
-				float brightness = getProximityBrightness(closest,lightSource.pos,10.0);
-				float angleOfIncidence = getAngleOfIncidence(closest,lightSource.pos);
-				float lightingEffects = brightness*angleOfIncidence;
+				float brightness = getProximityBrightness(closest,lightSource);
+				float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
+				float lightingEffects = brightness * angleOfIncidence;
 				closestMat.colour.red *= lightingEffects;
 				closestMat.colour.green *= lightingEffects;
 				closestMat.colour.blue *= lightingEffects;

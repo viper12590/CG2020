@@ -415,7 +415,27 @@ bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection int
 
 float getProximityBrightness(RayTriangleIntersection intersection, glm::vec3 light, float intensity) {
 	float distance = glm::abs(glm::length(light - intersection.intersectionPoint));
-	return intensity*1.0/(4*glm::pi<float>()*distance*distance);
+	float brightness = intensity*1.0/(4*glm::pi<float>()*distance*distance);
+	if(brightness > 1.0) {
+		brightness = 1.0;
+	}
+	else if(brightness < 0.0) {
+		brightness = 0.0;
+	}
+	return brightness;
+}
+
+glm::vec3 getNormalOfTriangle(ModelTriangle triangle) {
+	glm::vec3 edge0 = triangle.vertices[1] - triangle.vertices[0];
+	glm::vec3 edge1 = triangle.vertices[2] - triangle.vertices[0];
+	glm::vec3 normal = glm::normalize(glm::cross(edge0, edge1));
+	return normal;
+}
+
+float getAngleOfIncidence(RayTriangleIntersection intersection, glm::vec3 light) {
+	glm::vec3 normal = intersection.intersectedTriangle.normal;
+	glm::vec3 lightDirection = glm::normalize(light - intersection.intersectionPoint);
+	return glm::dot(normal,lightDirection);
 }
 
 
@@ -463,18 +483,20 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
-				float brightness = getProximityBrightness(closest,lightSource,1.5);
-				closestMat.colour.red *= brightness;
-				closestMat.colour.green *= brightness;
-				closestMat.colour.blue *= brightness;
+				float brightness = getProximityBrightness(closest,lightSource,2.0);
+				float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
+				float lightingEffects = brightness*angleOfIncidence;
+				closestMat.colour.red *= lightingEffects;
+				closestMat.colour.green *= lightingEffects;
+				closestMat.colour.blue *= lightingEffects;
 				window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
-				for(int i = 0; i < pairs.size(); i++) {
-					ModelTriangle triangle = pairs[i].first;
-					if(shadowRay(u,v,triangle,closest,lightSource)) {
-						window.setPixelColour(u,v,0xFF000000);
-						break;	
-					}
-				}
+				// for(int i = 0; i < pairs.size(); i++) {
+				// 	ModelTriangle triangle = pairs[i].first;
+				// 	if(shadowRay(u,v,triangle,closest,lightSource)) {
+				// 		window.setPixelColour(u,v,0xFF000000);
+				// 		break;	
+				// 	}
+				// }
 			}
 		}
 	
@@ -575,6 +597,12 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if(event.key.keysym.sym == SDLK_y) {
 			lightSource.y += 0.01;
 		}
+		else if(event.key.keysym.sym == SDLK_g) {
+			lightSource.x -= 0.01;
+		}
+		else if(event.key.keysym.sym == SDLK_j) {
+			lightSource.x += 0.01;
+		}
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) window.savePPM("output.ppm");
 }
 
@@ -632,6 +660,9 @@ int main(int argc, char *argv[]) {
 	}
 	ObjLoader modelLoader = ObjLoader();
 	pairs = modelLoader.loadObj("textured-cornell-box.obj", 0.17);
+	for(int i = 0; i < pairs.size(); i++) {
+		pairs[i].first.normal = getNormalOfTriangle(pairs[i].first);
+	}
 	lightSource = glm::vec3(0.0, 0.45, 0.0);
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);

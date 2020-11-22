@@ -401,18 +401,14 @@ bool triangleEqual(ModelTriangle triangle1, ModelTriangle triangle2) {
 	return triangle1.vertices[0] == triangle2.vertices[0] && triangle1.vertices[1] == triangle2.vertices[1] && triangle1.vertices[2] == triangle2.vertices[2];
 }
 
-bool shadowRay(int u, int v, std::vector<std::pair<ModelTriangle,Material>> pairs, RayTriangleIntersection intersection, glm::vec3 light) {
+bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection intersection, glm::vec3 light) {
 	glm::vec3 worldSpaceCanvasPixel = intersection.intersectionPoint;
 	glm::vec3 rayDirection = glm::normalize((light - worldSpaceCanvasPixel));
 	bool isShadow = false;
-	for(int i=0; i < pairs.size(); i++) {
-		ModelTriangle triangle = pairs[i].first;
-		if(!triangleEqual(triangle,intersection.intersectedTriangle)) {
-
-			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, worldSpaceCanvasPixel, rayDirection);
-			if(isValidIntersection(tuvVector) && tuvVector[0] < glm::length(light - worldSpaceCanvasPixel)) {
-				isShadow = true;
-			}
+	if(!triangleEqual(triangle,intersection.intersectedTriangle)) {
+		glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, worldSpaceCanvasPixel, rayDirection);
+		if(isValidIntersection(tuvVector) && tuvVector[0] < glm::length(light - worldSpaceCanvasPixel)) {
+			isShadow = true;
 		}
 	}
 	return isShadow;
@@ -463,12 +459,13 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
-				
-				if(shadowRay(u,v,pairs,closest,lightSource)) {
-					window.setPixelColour(u,v,0xFF000000);
-				}
-				else {
-					window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
+				window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
+				for(int i = 0; i < pairs.size(); i++) {
+					ModelTriangle triangle = pairs[i].first;
+					if(shadowRay(u,v,triangle,closest,lightSource)) {
+						window.setPixelColour(u,v,0xFF000000);
+						break;	
+					}
 				}
 			}
 		}

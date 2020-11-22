@@ -435,7 +435,14 @@ glm::vec3 getNormalOfTriangle(ModelTriangle triangle) {
 float getAngleOfIncidence(RayTriangleIntersection intersection, glm::vec3 light) {
 	glm::vec3 normal = intersection.intersectedTriangle.normal;
 	glm::vec3 lightDirection = glm::normalize(light - intersection.intersectionPoint);
-	return glm::dot(normal,lightDirection);
+	float angle = glm::dot(normal,lightDirection);
+	if(angle > 1.0) {
+		angle = 1.0;
+	}
+	else if(angle < 0.0) {
+		angle = 0.0;
+	}
+	return angle;
 }
 
 
@@ -483,20 +490,20 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
-				float brightness = getProximityBrightness(closest,lightSource,2.0);
+				float brightness = getProximityBrightness(closest,lightSource,10.0);
 				float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
 				float lightingEffects = brightness*angleOfIncidence;
 				closestMat.colour.red *= lightingEffects;
 				closestMat.colour.green *= lightingEffects;
 				closestMat.colour.blue *= lightingEffects;
 				window.setPixelColour(u,v,closestMat.colour.toHex(0xFF));
-				// for(int i = 0; i < pairs.size(); i++) {
-				// 	ModelTriangle triangle = pairs[i].first;
-				// 	if(shadowRay(u,v,triangle,closest,lightSource)) {
-				// 		window.setPixelColour(u,v,0xFF000000);
-				// 		break;	
-				// 	}
-				// }
+				for(int i = 0; i < pairs.size(); i++) {
+					ModelTriangle triangle = pairs[i].first;
+					if(shadowRay(u,v,triangle,closest,lightSource)) {
+						window.setPixelColour(u,v,0xFF000000);
+						break;	
+					}
+				}
 			}
 		}
 	
@@ -663,7 +670,7 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; i < pairs.size(); i++) {
 		pairs[i].first.normal = getNormalOfTriangle(pairs[i].first);
 	}
-	lightSource = glm::vec3(0.0, 0.45, 0.0);
+	lightSource = glm::vec3(0.0, 0.36, 0.1);
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;

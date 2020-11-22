@@ -413,8 +413,9 @@ bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection int
 	return false;
 }
 
-float getProximityBrightness() {
-	return 1.0;
+float getProximityBrightness(RayTriangleIntersection intersection, glm::vec3 light, float intensity) {
+	float distance = glm::abs(glm::length(light - intersection.intersectionPoint));
+	return intensity*1.0/(4*glm::pi<float>()*distance*distance);
 }
 
 
@@ -462,7 +463,7 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
-				float brightness = getProximityBrightness();
+				float brightness = getProximityBrightness(closest,lightSource,1.5);
 				closestMat.colour.red *= brightness;
 				closestMat.colour.green *= brightness;
 				closestMat.colour.blue *= brightness;
@@ -567,6 +568,12 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if(event.key.keysym.sym == SDLK_n) {
 			std::cout << "Wireframe" << std::endl;
 			renderMode = WIREFRAME;
+		}
+		else if(event.key.keysym.sym == SDLK_h) {
+			lightSource.y -= 0.01;
+		}
+		else if(event.key.keysym.sym == SDLK_y) {
+			lightSource.y += 0.01;
 		}
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) window.savePPM("output.ppm");
 }

@@ -43,6 +43,7 @@ std::vector<std::pair<ModelTriangle,Material>> ObjLoader::loadObj(std::string fi
 	
 	std::vector<std::pair<ModelTriangle, Material>> pairs;
 	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> vertexNormals;
 	std::vector<TexturePoint> texturePoints;
 
 	Material material;
@@ -59,11 +60,13 @@ std::vector<std::pair<ModelTriangle,Material>> ObjLoader::loadObj(std::string fi
 		else if(tokens[0].compare("vt") == 0) {
 			texturePoints.push_back(TexturePoint(stof(tokens[1]), stof(tokens[2])));
 		}
+		else if(tokens[0].compare("vn") == 0) vertexNormals.push_back(glm::vec3(stof(tokens[1]),stof(tokens[2]),stof(tokens[3])));
 		
 		else if(tokens[0].compare("f") == 0) {
 			//For each index in f
 			std::array<glm::vec3, 3> trianglePoints;
 			std::array<TexturePoint, 3> selectedTexturePoints;
+			std::array<glm::vec3, 3> selectedNormals;
 			for(int i = 1; i < 4; i++) {
 				std::vector<std::string> subTokens = split(tokens[i], '/');
 				//TrianglePoint
@@ -72,12 +75,16 @@ std::vector<std::pair<ModelTriangle,Material>> ObjLoader::loadObj(std::string fi
 				if(subTokens[1].compare("\0") != 0) {
 					selectedTexturePoints[i - 1] = texturePoints[stoi(subTokens[1]) - 1];
 				}
+				if(subTokens[2].compare("\0") != 0) {
+					selectedNormals[i - 1] = vertexNormals[stoi(subTokens[2]) - 1];
+				}
 			}
 
 			ModelTriangle triangle = ModelTriangle();
 			triangle.vertices = trianglePoints;
 			triangle.texturePoints = selectedTexturePoints;
 			triangle.colour = material.colour;
+			triangle.vertexNormals = selectedNormals;
 			pairs.push_back(std::pair<ModelTriangle,Material>(triangle,material));
 		}
 	}

@@ -461,7 +461,9 @@ void wireframeRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,
 		drawTriangle(window,transposedTri,material.colour);
 	}
 	CanvasPoint light = getCanvasPoint(lightSource.pos);
-	window.setPixelColour(light.x,light.y,0xFF00FF00);
+	if(light.x >= 0 && light.x <= WIDTH - 1 && light.y >= 0 && light.y <= HEIGHT - 1) {
+		window.setPixelColour(light.x,light.y,0xFF00FF00);
+	}
 }
 
 void rasterisingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
@@ -630,6 +632,12 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if(event.key.keysym.sym == SDLK_j) {
 			lightSource.pos.x += 0.01;
 		}
+		else if(event.key.keysym.sym == SDLK_u) {
+			lightSource.pos.z -= 0.01;
+		}
+		else if(event.key.keysym.sym == SDLK_t) {
+			lightSource.pos.z += 0.01;
+		}
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) window.savePPM("output.ppm");
 }
 
@@ -685,8 +693,9 @@ int main(int argc, char *argv[]) {
 			ZBuffer[x][y] = 0.0;
 		}
 	}
+	camera.f = 4.0;
 	ObjLoader modelLoader = ObjLoader();
-	pairs = modelLoader.loadObj("textured-cornell-box.obj", 0.17);
+	pairs = modelLoader.loadObj("sphere.obj", 0.17);
 	for(int i = 0; i < pairs.size(); i++) {
 		pairs[i].first.normal = getNormalOfTriangle(pairs[i].first);
 	}

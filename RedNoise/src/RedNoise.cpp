@@ -460,6 +460,8 @@ void wireframeRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,
 		CanvasTriangle transposedTri = getCanvasTriangle(triangle);
 		drawTriangle(window,transposedTri,material.colour);
 	}
+	CanvasPoint light = getCanvasPoint(lightSource.pos);
+	window.setPixelColour(light.x,light.y,0xFF00FF00);
 }
 
 void rasterisingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {

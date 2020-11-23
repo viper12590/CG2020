@@ -352,22 +352,27 @@ CanvasTriangle getRandomTriangle() {
 	return triangle;
 }
 
+CanvasPoint getCanvasPoint(glm::vec3 vertex) {
+	vertex -= camera.pos;
+	vertex = camera.rot * vertex;
+	float u = glm::floor(-camera.f*(vertex.x / vertex.z)*WIDTH + WIDTH/2);
+	float v = glm::floor(camera.f*(vertex.y / vertex.z)*WIDTH + HEIGHT/2);
+	float Z = INFINITY;
+	
+	if(vertex.z != 0.0) {
+		Z = glm::abs(1 / vertex.z);
+	}
+	return CanvasPoint(u,v,Z);
+}
+
 
 CanvasTriangle getCanvasTriangle(ModelTriangle triangle) {
-	std::vector<glm::vec3> renderPos;
+	std::vector<CanvasPoint> points;
 	for(int i=0; i < triangle.vertices.size(); i++) {
-		glm::vec3 vertex = triangle.vertices[i] - camera.pos;
-		vertex = camera.rot * vertex;
-		float u = glm::floor(-camera.f*(vertex.x / vertex.z)*WIDTH + WIDTH/2);
-		float v = glm::floor(camera.f*(vertex.y / vertex.z)*WIDTH + HEIGHT/2);
-		float Z = INFINITY;
-		
-		if(vertex.z != 0.0) {
-			Z = glm::abs(1 / vertex.z);
-		}
-		renderPos.push_back(glm::vec3(u, v, Z));
+		CanvasPoint point = getCanvasPoint(triangle.vertices[i]);
+		points.push_back(point);
 	}
-	return CanvasTriangle(CanvasPoint(renderPos[0].x, renderPos[0].y, renderPos[0].z),CanvasPoint(renderPos[1].x, renderPos[1].y, renderPos[1].z) ,CanvasPoint(renderPos[2].x, renderPos[2].y, renderPos[2].z));			
+	return CanvasTriangle(points[0],points[1],points[2]);			
 }
 
 void drawModelTriangle(DrawingWindow &window, std::pair<ModelTriangle, Material> pair) {

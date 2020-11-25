@@ -72,10 +72,10 @@ std::vector<std::pair<ModelTriangle,Material>> ObjLoader::loadObj(std::string fi
 				//TrianglePoint
 				trianglePoints[i - 1] = vertices[stoi(subTokens[0]) - 1];
 				//TexturePoint
-				if(subTokens[1].compare("\0") != 0) {
+				if(subTokens[1].compare("\0") != 0 && !texturePoints.empty()) {
 					selectedTexturePoints[i - 1] = texturePoints[stoi(subTokens[1]) - 1];
 				}
-				if(subTokens[2].compare("\0") != 0) {
+				if(subTokens[2].compare("\0") != 0 && !vertexNormals.empty()) {
 					selectedNormals[i - 1] = vertexNormals[stoi(subTokens[2]) - 1];
 				}
 			}
@@ -85,6 +85,7 @@ std::vector<std::pair<ModelTriangle,Material>> ObjLoader::loadObj(std::string fi
 			triangle.texturePoints = selectedTexturePoints;
 			triangle.colour = material.colour;
 			triangle.vertexNormals = selectedNormals;
+
 			pairs.push_back(std::pair<ModelTriangle,Material>(triangle,material));
 		}
 	}

@@ -23,13 +23,15 @@
 
 std::vector<std::vector<float>> ZBuffer;
 std::vector<std::pair<ModelTriangle, Material>> pairs;
+std::vector<std::pair<ModelTriangle, Material>> cornell_box;
+std::vector<std::pair<ModelTriangle, Material>> sphere;
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
-//LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
-LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
+LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
+// LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -420,10 +422,49 @@ bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection int
 	return false;
 }
 
+//with shadow bias
+bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection intersection, glm::vec3 normal, glm::vec3 light, float shadowBias) {
+	glm::vec3 worldSpaceCanvasPixel = intersection.intersectionPoint + shadowBias*normal;
+	glm::vec3 rayDirection = glm::normalize((light - worldSpaceCanvasPixel));
+	if(!triangleEqual(triangle,intersection.intersectedTriangle)) {
+		glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, worldSpaceCanvasPixel, rayDirection);
+		if(isValidIntersection(tuvVector) && tuvVector[0] < glm::length(light - worldSpaceCanvasPixel)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+std::array<glm::vec3, 3> calcTriangleVertexNormal(ModelTriangle triangle, std::vector<std::pair<ModelTriangle,Material>> pairs) {
+	std::array<glm::vec3, 3> vertexNormals;
+	//For all vertex of the current triangle
+	for(int v = 0; v < 3; v++) {
+		glm::vec3 currentV = triangle.vertices[v];
+		std::vector<ModelTriangle> neighborTriangles;
+		//Check every ModelTriangles and add every neighbors to vector (including self)
+		for(int i = 0; i < pairs.size(); i++) {
+			ModelTriangle modelTriagnle = pairs[i].first;
+			if(currentV == modelTriagnle.vertices[0] || currentV == modelTriagnle.vertices[1] || currentV == modelTriagnle.vertices[2]) {
+				neighborTriangles.push_back(modelTriagnle);
+			}
+		}
+
+		glm::vec3 totalNormal(0);
+		for(int j = 0; j < neighborTriangles.size(); j++) {
+			//Add all triangle normal of neighbors (and self)
+			totalNormal += neighborTriangles[j].normal;
+		}
+		//Take the average
+		totalNormal /= neighborTriangles.size();
+		vertexNormals[v] = totalNormal;
+	}
+	return vertexNormals;
+}
+
 glm::vec3 getVertexNormal(RayTriangleIntersection intersection, float u, float v) {
 	ModelTriangle triangle = intersection.intersectedTriangle;
 	float w = 1.0 - (u + v);
-	glm::vec3 targetNormal = glm::normalize(u*triangle.vertices[2] + v*triangle.vertices[1] + w*triangle.vertices[0]);
+	glm::vec3 targetNormal = glm::normalize(v*triangle.vertexNormals[2] + u*triangle.vertexNormals[1] + w*triangle.vertexNormals[0]);
 	return targetNormal;
 }
 
@@ -511,13 +552,15 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 			glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
 			std::vector<RayTriangleIntersection> intersections;
 			std::vector<Material> materials;
-			glm::vec3 selectedTuvVector;
+			std::vector<glm::vec3> tuvVectors;
+			// glm::vec3 selectedTuvVector;
 			for(int i = 0; i < pairs.size(); i++) {
 				ModelTriangle triangle = pairs[i].first;
 				Material material = pairs[i].second;
 				glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
 				if(isValidIntersection(tuvVector)) {
-					selectedTuvVector = tuvVector;
+					// selectedTuvVector = tuvVector;
+					tuvVectors.push_back(tuvVector);
 					RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
 					intersections.push_back(intersection);
 					materials.push_back(material);
@@ -527,19 +570,21 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 				//Find closest intersection point
 				RayTriangleIntersection closest = intersections[0];
 				Material closestMat = materials[0];
+				glm::vec3 closestTuvVector = tuvVectors[0];
 				for(int i = 0; i < intersections.size(); i++) {
 					if(intersections[i].distanceFromCamera <= closest.distanceFromCamera){
 						closest = intersections[i];
 						closestMat = materials[i];
+						closestTuvVector = tuvVectors[i];
 					}
 				}
 				//Get normal of the vertex
-				glm::vec3 vertexNormal = getVertexNormal(closest,selectedTuvVector[1],selectedTuvVector[2]);
+				glm::vec3 vertexNormal = getVertexNormal(closest,closestTuvVector[1],closestTuvVector[2]);
 				//Check for the shadow
 				bool shadow = false;
 				for(int i = 0; i < pairs.size(); i++) {
 					ModelTriangle triangle = pairs[i].first;
-					if(shadowRay(u,v,triangle,closest,lightSource.pos)) {
+					if(shadowRay(u,v,triangle,closest,vertexNormal,lightSource.pos,0.001f)) {
 						shadow = true;
 						break;	
 					}
@@ -729,13 +774,23 @@ int main(int argc, char *argv[]) {
 			ZBuffer[x][y] = 0.0;
 		}
 	}
-	camera.f = 4.0;
-	camera.pos = glm::vec3(0.0,0.2,4.0);
+	// camera.f = 4.0;
+	// camera.pos = glm::vec3(0.0,0.2,4.0);
 	ObjLoader modelLoader = ObjLoader();
-	pairs = modelLoader.loadObj("sphere.obj", 0.17);
-	for(int i = 0; i < pairs.size(); i++) {
-		pairs[i].first.normal = getNormalOfTriangle(pairs[i].first);
+	sphere = modelLoader.loadObj("sphere.obj", 0.17);
+	for(int i = 0; i < sphere.size(); i++) {
+		sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
 	}
+
+	cornell_box = modelLoader.loadObj("textured-cornell-box.obj",0.17);
+	for(int i = 0; i < cornell_box.size(); i++) {
+		cornell_box[i].first.normal = getNormalOfTriangle(cornell_box[i].first);
+	}
+	for(int i = 0; i < cornell_box.size(); i++) {
+		cornell_box[i].first.vertexNormals = calcTriangleVertexNormal(cornell_box[i].first, cornell_box);
+	}
+	pairs = cornell_box;
+	pairs.insert(pairs.end(),sphere.begin(),sphere.end());
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;

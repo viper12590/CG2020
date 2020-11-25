@@ -32,6 +32,7 @@ Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
 // LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
+std::vector<LightSource> lightSources;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -779,8 +780,11 @@ int main(int argc, char *argv[]) {
 	ObjLoader modelLoader = ObjLoader();
 	sphere = modelLoader.loadObj("sphere.obj", 0.08);
 	for(int i = 0; i < sphere.size(); i++) {
-		
 		sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
+		std::array<glm::vec3, 3> vertices = sphere[i].first.vertices;
+		for(int j = 0; j < 3; j++) {
+			lightSources.push_back(LightSource(vertices[j],2.0f));
+		}
 	}
 
 	cornell_box = modelLoader.loadObj("textured-cornell-box.obj",0.17);
@@ -791,7 +795,7 @@ int main(int argc, char *argv[]) {
 		cornell_box[i].first.vertexNormals = calcTriangleVertexNormal(cornell_box[i].first, cornell_box);
 	}
 	pairs = cornell_box;
-	pairs.insert(pairs.end(),sphere.begin(),sphere.end());
+	// pairs.insert(pairs.end(),sphere.begin(),sphere.end());
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;

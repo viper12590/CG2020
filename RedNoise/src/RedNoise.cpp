@@ -30,8 +30,8 @@ RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
-LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
-// LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
+// LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
+LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -774,23 +774,23 @@ int main(int argc, char *argv[]) {
 			ZBuffer[x][y] = 0.0;
 		}
 	}
-	// camera.f = 4.0;
-	// camera.pos = glm::vec3(0.0,0.2,4.0);
+	camera.f = 4.0;
+	camera.pos = glm::vec3(0.0,0.2,4.0);
 	ObjLoader modelLoader = ObjLoader();
 	sphere = modelLoader.loadObj("sphere.obj", 0.17);
 	for(int i = 0; i < sphere.size(); i++) {
 		sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
 	}
 
-	cornell_box = modelLoader.loadObj("textured-cornell-box.obj",0.17);
-	for(int i = 0; i < cornell_box.size(); i++) {
-		cornell_box[i].first.normal = getNormalOfTriangle(cornell_box[i].first);
-	}
-	for(int i = 0; i < cornell_box.size(); i++) {
-		cornell_box[i].first.vertexNormals = calcTriangleVertexNormal(cornell_box[i].first, cornell_box);
-	}
-	pairs = cornell_box;
-	pairs.insert(pairs.end(),sphere.begin(),sphere.end());
+	// cornell_box = modelLoader.loadObj("textured-cornell-box.obj",0.17);
+	// for(int i = 0; i < cornell_box.size(); i++) {
+	// 	cornell_box[i].first.normal = getNormalOfTriangle(cornell_box[i].first);
+	// }
+	// for(int i = 0; i < cornell_box.size(); i++) {
+	// 	cornell_box[i].first.vertexNormals = calcTriangleVertexNormal(cornell_box[i].first, cornell_box);
+	// }
+	pairs = sphere;
+	// pairs.insert(pairs.end(),sphere.begin(),sphere.end());
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;

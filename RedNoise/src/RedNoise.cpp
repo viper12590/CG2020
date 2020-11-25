@@ -28,7 +28,8 @@ RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
-LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
+//LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
+LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -419,6 +420,13 @@ bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection int
 	return false;
 }
 
+glm::vec3 getVertexNormal(RayTriangleIntersection intersection, float u, float v) {
+	ModelTriangle triangle = intersection.intersectedTriangle;
+	float w = 1.0 - (u + v);
+	glm::vec3 targetNormal = glm::normalize(u*triangle.vertices[2] + v*triangle.vertices[1] + w*triangle.vertices[0]);
+	return targetNormal;
+}
+
 float getProximityBrightness(RayTriangleIntersection intersection, LightSource light) {
 	float distance = glm::abs(glm::length(light.pos - intersection.intersectionPoint));
 	float brightness = 1.0f/(glm::pi<float>()*distance*distance);
@@ -439,8 +447,23 @@ float getAngleOfIncidence(RayTriangleIntersection intersection, LightSource ligh
 	return glm::clamp(angle, 0.0f, 1.0f);
 }
 
+//gouraud version
+float getAngleOfIncidence(RayTriangleIntersection intersection,glm::vec3 normal ,LightSource light) {
+	//glm::vec3 normal = intersection.intersectedTriangle.normal;
+	glm::vec3 lightDirection = glm::normalize(light.pos - intersection.intersectionPoint);
+	float angle = glm::dot(normal,lightDirection);
+	return glm::clamp(angle, 0.0f, 1.0f);
+}
+
 glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, LightSource light) {
 	glm::vec3 normal = intersection.intersectedTriangle.normal;
+	glm::vec3 lightDirection = glm::normalize(intersection.intersectionPoint - light.pos);
+	return glm::normalize(lightDirection - 2.0f*normal*(glm::dot(lightDirection,normal)));
+}
+
+//gouraud version
+glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, glm::vec3 normal, LightSource light) {
+	//glm::vec3 normal = intersection.intersectedTriangle.normal;
 	glm::vec3 lightDirection = glm::normalize(intersection.intersectionPoint - light.pos);
 	return glm::normalize(lightDirection - 2.0f*normal*(glm::dot(lightDirection,normal)));
 }
@@ -448,6 +471,14 @@ glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, LightSourc
 float getSpecularSpread(RayTriangleIntersection intersection, Camera view, LightSource light, int shininess) {
 	glm::vec3 viewDirection = glm::normalize(view.pos - intersection.intersectionPoint);
 	glm::vec3 reflection = getVectorOfReflection(intersection,light);
+	float spread = glm::pow(glm::dot(viewDirection,reflection),shininess);
+	return spread;
+}
+
+//gouraud version
+float getSpecularSpread(RayTriangleIntersection intersection,glm::vec3 normal ,Camera view, LightSource light, int shininess) {
+	glm::vec3 viewDirection = glm::normalize(view.pos - intersection.intersectionPoint);
+	glm::vec3 reflection = getVectorOfReflection(intersection,normal,light);
 	float spread = glm::pow(glm::dot(viewDirection,reflection),shininess);
 	return spread;
 }
@@ -480,12 +511,13 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 			glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
 			std::vector<RayTriangleIntersection> intersections;
 			std::vector<Material> materials;
-			
+			glm::vec3 selectedTuvVector;
 			for(int i = 0; i < pairs.size(); i++) {
 				ModelTriangle triangle = pairs[i].first;
 				Material material = pairs[i].second;
 				glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
 				if(isValidIntersection(tuvVector)) {
+					selectedTuvVector = tuvVector;
 					RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
 					intersections.push_back(intersection);
 					materials.push_back(material);
@@ -501,6 +533,8 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 						closestMat = materials[i];
 					}
 				}
+				//Get normal of the vertex
+				glm::vec3 vertexNormal = getVertexNormal(closest,selectedTuvVector[1],selectedTuvVector[2]);
 				//Check for the shadow
 				bool shadow = false;
 				for(int i = 0; i < pairs.size(); i++) {
@@ -513,10 +547,12 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 				float ambience = 0.2f;
 				if(!shadow) {
 					float brightness = getProximityBrightness(closest,lightSource);
-					float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
+					// float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
+					float angleOfIncidence = getAngleOfIncidence(closest,vertexNormal,lightSource);
 					
 					float lighting = glm::max(ambience, brightness * angleOfIncidence);
-					float specular = 255.0f * getSpecularSpread(closest,camera,lightSource,256);
+					// float specular = 255.0f * getSpecularSpread(closest,camera,lightSource,256);
+					float specular = 255.0f * getSpecularSpread(closest,vertexNormal,camera,lightSource,256);
 					glm::vec3 finalColourVector = glm::clamp((specular + lightSource.intensity * lighting * glm::vec3(closestMat.colour.red, closestMat.colour.green, closestMat.colour.blue)),0.0f,255.0f);
 					Colour finalColour(finalColourVector.r,finalColourVector.g,finalColourVector.b);
 					window.setPixelColour(u,v,finalColour.toHex(0xFF));
@@ -694,6 +730,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	camera.f = 4.0;
+	camera.pos = glm::vec3(0.0,0.2,4.0);
 	ObjLoader modelLoader = ObjLoader();
 	pairs = modelLoader.loadObj("sphere.obj", 0.17);
 	for(int i = 0; i < pairs.size(); i++) {

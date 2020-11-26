@@ -491,7 +491,6 @@ float getAngleOfIncidence(RayTriangleIntersection intersection, LightSource ligh
 
 //gouraud version
 float getAngleOfIncidence(RayTriangleIntersection intersection,glm::vec3 normal ,LightSource light) {
-	//glm::vec3 normal = intersection.intersectedTriangle.normal;
 	glm::vec3 lightDirection = glm::normalize(light.pos - intersection.intersectionPoint);
 	float angle = glm::dot(normal,lightDirection);
 	return glm::clamp(angle, 0.0f, 1.0f);
@@ -505,7 +504,6 @@ glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, LightSourc
 
 //gouraud version
 glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, glm::vec3 normal, LightSource light) {
-	//glm::vec3 normal = intersection.intersectedTriangle.normal;
 	glm::vec3 lightDirection = glm::normalize(intersection.intersectionPoint - light.pos);
 	return glm::normalize(lightDirection - 2.0f*normal*(glm::dot(lightDirection,normal)));
 }
@@ -523,6 +521,20 @@ float getSpecularSpread(RayTriangleIntersection intersection,glm::vec3 normal ,C
 	glm::vec3 reflection = getVectorOfReflection(intersection,normal,light);
 	float spread = glm::pow(glm::dot(viewDirection,reflection),shininess);
 	return spread;
+}
+
+std::vector<RayTriangleIntersection> getReflectedIntersections(std::vector<std::pair<ModelTriangle,Material>> pairs, RayTriangleIntersection mirrorIntersection , glm::vec3 reflectedRay) {
+	std::vector<RayTriangleIntersection> intersections;
+	for(int i = 0; i < pairs.size(); i++) {
+		ModelTriangle triangle = pairs[i].first;
+		if(triangleEqual(mirrorIntersection.intersectedTriangle,triangle)) {
+			glm::vec3 tuv = getPossibleIntersectionSolution(triangle,mirrorIntersection.intersectionPoint,reflectedRay);
+			if(isValidIntersection(tuv)) {
+				intersections.push_back(getRayTriangleIntersection(triangle,tuv));
+			}
+		}
+	}
+	return intersections;
 }
 
 
@@ -546,21 +558,19 @@ void rasterisingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangl
 }
 
 void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {
-	for(int u = 0; u < WIDTH; u++) {
-		for(int v = 0; v < HEIGHT; v++) {
-			glm::vec3 cameraSpaceCanvasPixel((u - WIDTH/2), (HEIGHT/2 - v), -camera.f*WIDTH);
+	for(int x = 0; x < WIDTH; x++) {
+		for(int y = 0; y < HEIGHT; y++) {
+			glm::vec3 cameraSpaceCanvasPixel((x - WIDTH/2), (HEIGHT/2 - y), -camera.f*WIDTH);
 			glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
 			glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
 			std::vector<RayTriangleIntersection> intersections;
 			std::vector<Material> materials;
 			std::vector<glm::vec3> tuvVectors;
-			// glm::vec3 selectedTuvVector;
 			for(int i = 0; i < pairs.size(); i++) {
 				ModelTriangle triangle = pairs[i].first;
 				Material material = pairs[i].second;
 				glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
 				if(isValidIntersection(tuvVector)) {
-					// selectedTuvVector = tuvVector;
 					tuvVectors.push_back(tuvVector);
 					RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
 					intersections.push_back(intersection);
@@ -585,12 +595,13 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 				bool shadow = false;
 				for(int i = 0; i < pairs.size(); i++) {
 					ModelTriangle triangle = pairs[i].first;
-					if(shadowRay(u,v,triangle,closest,vertexNormal,lightSource.pos,0.001f)) {
+					if(shadowRay(x,y,triangle,closest,vertexNormal,lightSource.pos,0.001f)) {
 						shadow = true;
 						break;	
 					}
 				}
 				float ambience = 0.2f;
+
 				if(!shadow) {
 					float brightness = getProximityBrightness(closest,lightSource);
 					// float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
@@ -601,12 +612,30 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 					float specular = 255.0f * getSpecularSpread(closest,vertexNormal,camera,lightSource,256);
 					glm::vec3 finalColourVector = glm::clamp((specular + lightSource.intensity * lighting * glm::vec3(closestMat.colour.red, closestMat.colour.green, closestMat.colour.blue)),0.0f,255.0f);
 					Colour finalColour(finalColourVector.r,finalColourVector.g,finalColourVector.b);
-					window.setPixelColour(u,v,finalColour.toHex(0xFF));
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));
 				}
 				else {
 					glm::vec3 finalColourVector = glm::vec3(closestMat.colour.red, closestMat.colour.green, closestMat.colour.blue) * ambience;
 					Colour finalColour(finalColourVector.r, finalColourVector.g, finalColourVector.b);
-					window.setPixelColour(u,v,finalColour.toHex(0xFF));
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));
+				}
+
+				//Make blue box mirror box
+				if(closestMat.colour.toHex(0xFF) == 0xFF0000FF) {
+					glm::vec3 reflectedRay = getVectorOfReflection(closest,vertexNormal,lightSource);
+					std::vector<RayTriangleIntersection> reflections = getReflectedIntersections(pairs,closest,reflectedRay);
+					if(reflections.empty()) {
+						window.setPixelColour(x,y,0xFF000000);
+					}
+					else {
+						RayTriangleIntersection closestReflection = reflections[0];
+						for(int i = 0; i < reflections.size(); i++) {
+							if(reflections[i].distanceFromCamera < closestReflection.distanceFromCamera) {
+								closestReflection = reflections[i];
+							}
+						}
+						window.setPixelColour(x,y,closestReflection.intersectedTriangle.colour.toHex(0xFF));
+					}
 				}
 			}
 		}

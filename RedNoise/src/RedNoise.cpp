@@ -546,9 +546,9 @@ void rasterisingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangl
 }
 
 void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {
-	for(int u = 0; u < WIDTH; u++) {
-		for(int v = 0; v < HEIGHT; v++) {
-			glm::vec3 cameraSpaceCanvasPixel((u - WIDTH/2), (HEIGHT/2 - v), -camera.f*WIDTH);
+	for(int x = 0; x < WIDTH; x++) {
+		for(int y = 0; y < HEIGHT; y++) {
+			glm::vec3 cameraSpaceCanvasPixel((x - WIDTH/2), (HEIGHT/2 - y), -camera.f*WIDTH);
 			glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
 			glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
 			std::vector<RayTriangleIntersection> intersections;
@@ -585,7 +585,7 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 				bool shadow = false;
 				for(int i = 0; i < pairs.size(); i++) {
 					ModelTriangle triangle = pairs[i].first;
-					if(shadowRay(u,v,triangle,closest,vertexNormal,lightSource.pos,0.001f)) {
+					if(shadowRay(x,y,triangle,closest,vertexNormal,lightSource.pos,0.001f)) {
 						shadow = true;
 						break;	
 					}
@@ -601,12 +601,12 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 					float specular = 255.0f * getSpecularSpread(closest,vertexNormal,camera,lightSource,256);
 					glm::vec3 finalColourVector = glm::clamp((specular + lightSource.intensity * lighting * glm::vec3(closestMat.colour.red, closestMat.colour.green, closestMat.colour.blue)),0.0f,255.0f);
 					Colour finalColour(finalColourVector.r,finalColourVector.g,finalColourVector.b);
-					window.setPixelColour(u,v,finalColour.toHex(0xFF));
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));
 				}
 				else {
 					glm::vec3 finalColourVector = glm::vec3(closestMat.colour.red, closestMat.colour.green, closestMat.colour.blue) * ambience;
 					Colour finalColour(finalColourVector.r, finalColourVector.g, finalColourVector.b);
-					window.setPixelColour(u,v,finalColour.toHex(0xFF));
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));
 				}
 			}
 		}

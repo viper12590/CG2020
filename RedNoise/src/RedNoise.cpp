@@ -565,10 +565,6 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 	std::vector<Material> materials;
 	std::vector<glm::vec3> tuvVectors;
 
-	if(debug) {
-		std::cout << "ray fired to:" << glm::to_string(worldSpaceCanvasPixel) << std::endl;
-		std::cout << "ray direction:" << glm::to_string(rayDirection) << std::endl;
-	}
 
 	for(int i = 0; i < pairs.size(); i++) {
 		ModelTriangle triangle = pairs[i].first;
@@ -580,7 +576,13 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 			intersections.push_back(intersection);
 			materials.push_back(material);
 		}
-	}//Refactor needed here
+	}
+	if(debug) {
+		std::cout << "ray fired to:" << glm::to_string(worldSpaceCanvasPixel) << std::endl;
+		std::cout << "ray direction:" << glm::to_string(rayDirection) << std::endl;
+		
+	}
+	//Refactor needed here
 	if(!intersections.empty()) {
 		//Find closest intersection point
 		RayTriangleIntersection closest = intersections[0];
@@ -640,6 +642,9 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 				}
 				window.setPixelColour(x,y,closestReflection.intersectedTriangle.colour.toHex(0xFF));
 			}
+		}
+		if(debug) {
+			std::cout << "ray hit at:" << glm::to_string(closest.intersectionPoint) << std::endl; 
 		}
 	}
 }

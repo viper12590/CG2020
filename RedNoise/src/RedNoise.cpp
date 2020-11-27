@@ -554,13 +554,11 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 			std::vector<RayTriangleIntersection> intersections;
 			std::vector<Material> materials;
 			std::vector<glm::vec3> tuvVectors;
-			// glm::vec3 selectedTuvVector;
 			for(int i = 0; i < pairs.size(); i++) {
 				ModelTriangle triangle = pairs[i].first;
 				Material material = pairs[i].second;
 				glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
 				if(isValidIntersection(tuvVector)) {
-					// selectedTuvVector = tuvVector;
 					tuvVectors.push_back(tuvVector);
 					RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
 					intersections.push_back(intersection);

@@ -569,9 +569,7 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 	glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
 	glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
 	std::vector<RayTriangleIntersection> intersections;
-	std::vector<Material> materials;
 	std::vector<glm::vec3> tuvVectors;
-
 
 	for(int i = 0; i < pairs.size(); i++) {
 		ModelTriangle triangle = pairs[i].first;
@@ -581,19 +579,16 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 			tuvVectors.push_back(tuvVector);
 			RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
 			intersections.push_back(intersection);
-			materials.push_back(material);
 		}
 	}
 	//Refactor needed here
 	if(!intersections.empty()) {
 		//Find closest intersection point
 		RayTriangleIntersection closest = intersections[0];
-		Material closestMat = materials[0];
 		glm::vec3 closestTuvVector = tuvVectors[0];
 		for(int i = 0; i < intersections.size(); i++) {
 			if(intersections[i].distanceFromCamera <= closest.distanceFromCamera){
 				closest = intersections[i];
-				closestMat = materials[i];
 				closestTuvVector = tuvVectors[i];
 			}
 		}
@@ -608,31 +603,13 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 				break;	
 			}
 		}
-		float ambience = 0.2f;
-
-		if(!shadow) {
-			float brightness = getProximityBrightness(closest,lightSource);
-			// float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
-			float angleOfIncidence = getAngleOfIncidence(closest,vertexNormal,lightSource);
-			
-			float lighting = glm::max(ambience, brightness * angleOfIncidence);
-			// float specular = 255.0f * getSpecularSpread(closest,camera,lightSource,256);
-			float specular = 255.0f * getSpecularSpread(closest,vertexNormal,camera,lightSource,256);
-			glm::vec3 finalColourVector = glm::clamp((specular + lightSource.intensity * lighting * glm::vec3(closestMat.colour.red, closestMat.colour.green, closestMat.colour.blue)),0.0f,255.0f);
-			Colour finalColour(finalColourVector.r,finalColourVector.g,finalColourVector.b);
-			window.setPixelColour(x,y,finalColour.toHex(0xFF));
-		}
-		else {
-			glm::vec3 finalColourVector = glm::vec3(closestMat.colour.red, closestMat.colour.green, closestMat.colour.blue) * ambience;
-			Colour finalColour(finalColourVector.r, finalColourVector.g, finalColourVector.b);
-			window.setPixelColour(x,y,finalColour.toHex(0xFF));
-		}
 		//Make blue box mirror box
-		if(closestMat.colour.toHex(0xFF) == 0xFF0000FF) {
+		if(closest.intersectedTriangle.colour.toHex(0xFF) == 0xFF0000FF) {
 			glm::vec3 reflectedRay = getVectorOfReflection(closest,closest.intersectedTriangle.normal,rayDirection);
 			std::vector<RayTriangleIntersection> reflections = getReflectedIntersections(pairs,closest,reflectedRay);
 			if(reflections.empty()) {
 				window.setPixelColour(x,y,0xFF000000);
+				return;
 			}
 			else {
 				RayTriangleIntersection closestReflection = reflections[0];
@@ -645,7 +622,27 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 					}
 				}
 				window.setPixelColour(x,y,closestReflection.intersectedTriangle.colour.toHex(0xFF));
+				return;
 			}
+		}
+
+		float ambience = 0.2f;
+		if(!shadow) {
+			float brightness = getProximityBrightness(closest,lightSource);
+			// float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
+			float angleOfIncidence = getAngleOfIncidence(closest,vertexNormal,lightSource);
+			
+			float lighting = glm::max(ambience, brightness * angleOfIncidence);
+			// float specular = 255.0f * getSpecularSpread(closest,camera,lightSource,256);
+			float specular = 255.0f * getSpecularSpread(closest,vertexNormal,camera,lightSource,256);
+			glm::vec3 finalColourVector = glm::clamp((specular + lightSource.intensity * lighting * glm::vec3(closest.intersectedTriangle.colour.red, closest.intersectedTriangle.colour.green, closest.intersectedTriangle.colour.blue)),0.0f,255.0f);
+			Colour finalColour(finalColourVector.r,finalColourVector.g,finalColourVector.b);
+			window.setPixelColour(x,y,finalColour.toHex(0xFF));
+		}
+		else {
+			glm::vec3 finalColourVector = glm::vec3(closest.intersectedTriangle.colour.red, closest.intersectedTriangle.colour.green, closest.intersectedTriangle.colour.blue) * ambience;
+			Colour finalColour(finalColourVector.r, finalColourVector.g, finalColourVector.b);
+			window.setPixelColour(x,y,finalColour.toHex(0xFF));
 		}
 	}
 }
@@ -741,12 +738,10 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if(event.key.keysym.sym == SDLK_r) {
 			std::cout << "RayTracing" << std::endl;
 			renderMode = RAYTRACING;
-			raytracingRender(window,pairs);
 		}
 		else if(event.key.keysym.sym == SDLK_n) {
 			std::cout << "Wireframe" << std::endl;
 			renderMode = WIREFRAME;
-			wireframeRender(window, pairs);
 		}
 		else if(event.key.keysym.sym == SDLK_h) {
 			lightSource.pos.y -= 0.01;
@@ -768,36 +763,32 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		}
 	} 
 	else if (event.type == SDL_MOUSEBUTTONDOWN) {
-		//window.savePPM("output.ppm")
-		int x, y;
-		SDL_GetMouseState(&x, &y);
-		std::cout << "ray fired to x:" << x << " y:" << y << std::endl;
-		rayTrace(x,y,window,pairs,true);
+		window.savePPM("output.ppm");
 	};
 }
 
 void draw(DrawingWindow &window) {
-	// for(int x = 0; x < WIDTH; x++) {
-	// 	for(int y = 0; y < HEIGHT; y++) {
-	// 		ZBuffer[x][y] = 0.0;
-	// 	}
-	// }
-	// window.clearPixels();
-	// switch (renderMode) {
-	// 	case WIREFRAME:
-	// 		wireframeRender(window, pairs);
-	// 		break;
-	// 	case RASTERIZING:
-	// 		rasterisingRender(window,pairs);
-	// 		break;
-	// 	case RAYTRACING:
-	// 		raytracingRender(window, pairs);
-	// 		break;
-	// 	default:
-	// 		break;
-	// }
+	for(int x = 0; x < WIDTH; x++) {
+		for(int y = 0; y < HEIGHT; y++) {
+			ZBuffer[x][y] = 0.0;
+		}
+	}
+	window.clearPixels();
+	switch (renderMode) {
+		case WIREFRAME:
+			wireframeRender(window, pairs);
+			break;
+		case RASTERIZING:
+			rasterisingRender(window,pairs);
+			break;
+		case RAYTRACING:
+			raytracingRender(window, pairs);
+			break;
+		default:
+			break;
+	}
 	
-	//window.setPixelColour(432,39,0x00FF0000);
+	window.setPixelColour(432,39,0x00FF0000);
 	
 }
 float theta = glm::acos(camera.pos.x / glm::distance(glm::vec3(0.0), camera.pos));

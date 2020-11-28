@@ -645,23 +645,9 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 		}
 
 		float ambience = 0.2f;
-		if(!shadow) {
-			float brightness = getProximityBrightness(closest.intersectionPoint,lightSource);
-			// float angleOfIncidence = getAngleOfIncidence(closest,lightSource);
-			float angleOfIncidence = getAngleOfIncidence(closest.intersectionPoint,vertexNormal,lightSource);
-			
-			float lighting = glm::max(ambience, brightness * angleOfIncidence);
-			// float specular = 255.0f * getSpecularSpread(closest,camera,lightSource,256);
-			float specular = 255.0f * getSpecularSpread(closest.intersectionPoint,vertexNormal,camera,lightSource,256);
-			glm::vec3 finalColourVector = glm::clamp((specular + lightSource.intensity * lighting * glm::vec3(closest.intersectedTriangle.colour.red, closest.intersectedTriangle.colour.green, closest.intersectedTriangle.colour.blue)),0.0f,255.0f);
-			Colour finalColour(finalColourVector.r,finalColourVector.g,finalColourVector.b);
-			window.setPixelColour(x,y,finalColour.toHex(0xFF));
-		}
-		else {
-			glm::vec3 finalColourVector = glm::vec3(closest.intersectedTriangle.colour.red, closest.intersectedTriangle.colour.green, closest.intersectedTriangle.colour.blue) * ambience;
-			Colour finalColour(finalColourVector.r, finalColourVector.g, finalColourVector.b);
-			window.setPixelColour(x,y,finalColour.toHex(0xFF));
-		}
+		Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,ambience,shadow,vertexNormal);
+		window.setPixelColour(x,y,finalColour.toHex(0xFF));
+
 		//Mirror reflection
 		if(closest.intersectedTriangle.isMirror) {
 			glm::vec3 reflectedRay = getVectorOfReflection(closest.intersectedTriangle.normal,rayDirection);

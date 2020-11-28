@@ -33,6 +33,7 @@ glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
 // LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 std::vector<LightSource> lightSources;
+uint32_t MIRROR_COLOUR = 0xFF0000FF;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -603,8 +604,8 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 				break;	
 			}
 		}
-		//Make blue box mirror box
-		if(closest.intersectedTriangle.colour.toHex(0xFF) == 0xFF0000FF) {
+		//Mirror reflection
+		if(closest.intersectedTriangle.isMirror) {
 			glm::vec3 reflectedRay = getVectorOfReflection(closest,closest.intersectedTriangle.normal,rayDirection);
 			std::vector<RayTriangleIntersection> reflections = getReflectedIntersections(pairs,closest,reflectedRay);
 			if(reflections.empty()) {
@@ -834,6 +835,9 @@ int main(int argc, char *argv[]) {
 	}
 	for(int i = 0; i < cornell_box.size(); i++) {
 		cornell_box[i].first.vertexNormals = calcTriangleVertexNormal(cornell_box[i].first, cornell_box);
+		if(cornell_box[i].first.colour.toHex(0xFF) == MIRROR_COLOUR) {
+			cornell_box[i].first.isMirror = true;
+		}
 	}
 	pairs = cornell_box;
 	// pairs.insert(pairs.end(),sphere.begin(),sphere.end());

@@ -584,9 +584,6 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 			materials.push_back(material);
 		}
 	}
-	if(debug) {
-		std::cout << "ray direction:" << glm::to_string(rayDirection) << std::endl;
-	}
 	//Refactor needed here
 	if(!intersections.empty()) {
 		//Find closest intersection point
@@ -630,29 +627,15 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 			Colour finalColour(finalColourVector.r, finalColourVector.g, finalColourVector.b);
 			window.setPixelColour(x,y,finalColour.toHex(0xFF));
 		}
-
-		if(debug) {
-			std::cout << "ray hit at:" << glm::to_string(closest.intersectionPoint) << std::endl;
-			std::cout << "normal:" << glm::to_string(vertexNormal) << std::endl;
-		}
 		//Make blue box mirror box
 		if(closestMat.colour.toHex(0xFF) == 0xFF0000FF) {
-			glm::vec3 reflectedRay = getVectorOfReflection(closest,vertexNormal,rayDirection);
+			glm::vec3 reflectedRay = getVectorOfReflection(closest,closest.intersectedTriangle.normal,rayDirection);
 			std::vector<RayTriangleIntersection> reflections = getReflectedIntersections(pairs,closest,reflectedRay);
-			if(debug) {
-				std::cout << "reflected ray direction:" << glm::to_string(reflectedRay) << std::endl;
-			}
 			if(reflections.empty()) {
 				window.setPixelColour(x,y,0xFF000000);
-				if(debug) {
-					std::cout << "reflected ray hit nothing" << std::endl;
-				}
 			}
 			else {
 				RayTriangleIntersection closestReflection = reflections[0];
-				if(debug) {
-						std::cout << "ray hit, colours:" << std::endl;
-					}
 				for(int i = 0; i < reflections.size(); i++) {
 					if(reflections[i].distanceFromCamera < closestReflection.distanceFromCamera) {
 						closestReflection = reflections[i];
@@ -661,18 +644,10 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 						std::cout << reflections[i].intersectedTriangle.colour.toHex(0xFF) << std::endl; 
 					}
 				}
-				if(debug) {
-					std::vector<glm::vec3> reflectedPath = interpolateVector(closest.intersectionPoint, closestReflection.intersectionPoint, glm::abs(glm::length(closestReflection.intersectionPoint - closest.intersectionPoint)));
-					for(int i = 0; i < reflectedPath.size(); i++) {
-						CanvasPoint canvasPoint = getCanvasPoint(reflectedPath[i]);
-						window.setPixelColour(canvasPoint.x, canvasPoint.y, 0xFF00FF00);
-					}
-				}
 				window.setPixelColour(x,y,closestReflection.intersectedTriangle.colour.toHex(0xFF));
 			}
 		}
 	}
-	if(debug) std::cout << std::endl;
 }
 
 void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {

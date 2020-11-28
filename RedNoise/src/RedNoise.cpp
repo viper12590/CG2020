@@ -20,6 +20,8 @@
 
 #define WIDTH 600
 #define HEIGHT 400
+#define AMBIENCE 0.2f
+#define SHADOW_BIAS 0.001f
 
 std::vector<std::vector<float>> ZBuffer;
 std::vector<std::pair<ModelTriangle, Material>> pairs;
@@ -33,8 +35,6 @@ glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
 // LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 std::vector<LightSource> lightSources;
-float AMBIENCE = 0.2f;
-float SHADOW_BIAS = 0.001f;
 uint32_t MIRROR_COLOUR = 0xFF0000FF;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {

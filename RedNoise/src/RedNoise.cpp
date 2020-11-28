@@ -508,6 +508,13 @@ glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, glm::vec3 
 	return glm::normalize(lightDirection - 2.0f*normal*(glm::dot(lightDirection,normal)));
 }
 
+//mirror
+glm::vec3 getVectorOfReflection(RayTriangleIntersection intersection, glm::vec3 normal, glm::vec3 from) {
+	//glm::vec3 lightDirection = glm::normalize(intersection.intersectionPoint - light.pos);
+	glm::vec3 fromDirection = glm::normalize(from);
+	return glm::normalize(fromDirection - 2.0f*normal*(glm::dot(fromDirection,normal)));
+}
+
 float getSpecularSpread(RayTriangleIntersection intersection, Camera view, LightSource light, int shininess) {
 	glm::vec3 viewDirection = glm::normalize(view.pos - intersection.intersectionPoint);
 	glm::vec3 reflection = getVectorOfReflection(intersection,light);
@@ -527,7 +534,7 @@ std::vector<RayTriangleIntersection> getReflectedIntersections(std::vector<std::
 	std::vector<RayTriangleIntersection> intersections;
 	for(int i = 0; i < pairs.size(); i++) {
 		ModelTriangle triangle = pairs[i].first;
-		if(triangleEqual(mirrorIntersection.intersectedTriangle,triangle)) {
+		if(!triangleEqual(mirrorIntersection.intersectedTriangle,triangle) && triangle.colour.toHex(0xFF) != 0xFF0000FF) {
 			glm::vec3 tuv = getPossibleIntersectionSolution(triangle,mirrorIntersection.intersectionPoint,reflectedRay);
 			if(isValidIntersection(tuv)) {
 				intersections.push_back(getRayTriangleIntersection(triangle,tuv));
@@ -578,9 +585,7 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 		}
 	}
 	if(debug) {
-		std::cout << "ray fired to:" << glm::to_string(worldSpaceCanvasPixel) << std::endl;
 		std::cout << "ray direction:" << glm::to_string(rayDirection) << std::endl;
-		
 	}
 	//Refactor needed here
 	if(!intersections.empty()) {
@@ -626,27 +631,48 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 			window.setPixelColour(x,y,finalColour.toHex(0xFF));
 		}
 
+		if(debug) {
+			std::cout << "ray hit at:" << glm::to_string(closest.intersectionPoint) << std::endl;
+			std::cout << "normal:" << glm::to_string(vertexNormal) << std::endl;
+		}
 		//Make blue box mirror box
 		if(closestMat.colour.toHex(0xFF) == 0xFF0000FF) {
-			glm::vec3 reflectedRay = getVectorOfReflection(closest,vertexNormal,lightSource);
+			glm::vec3 reflectedRay = getVectorOfReflection(closest,vertexNormal,rayDirection);
 			std::vector<RayTriangleIntersection> reflections = getReflectedIntersections(pairs,closest,reflectedRay);
+			if(debug) {
+				std::cout << "reflected ray direction:" << glm::to_string(reflectedRay) << std::endl;
+			}
 			if(reflections.empty()) {
 				window.setPixelColour(x,y,0xFF000000);
+				if(debug) {
+					std::cout << "reflected ray hit nothing" << std::endl;
+				}
 			}
 			else {
 				RayTriangleIntersection closestReflection = reflections[0];
+				if(debug) {
+						std::cout << "ray hit, colours:" << std::endl;
+					}
 				for(int i = 0; i < reflections.size(); i++) {
 					if(reflections[i].distanceFromCamera < closestReflection.distanceFromCamera) {
 						closestReflection = reflections[i];
+					}
+					if(debug) {
+						std::cout << reflections[i].intersectedTriangle.colour.toHex(0xFF) << std::endl; 
+					}
+				}
+				if(debug) {
+					std::vector<glm::vec3> reflectedPath = interpolateVector(closest.intersectionPoint, closestReflection.intersectionPoint, glm::abs(glm::length(closestReflection.intersectionPoint - closest.intersectionPoint)));
+					for(int i = 0; i < reflectedPath.size(); i++) {
+						CanvasPoint canvasPoint = getCanvasPoint(reflectedPath[i]);
+						window.setPixelColour(canvasPoint.x, canvasPoint.y, 0xFF00FF00);
 					}
 				}
 				window.setPixelColour(x,y,closestReflection.intersectedTriangle.colour.toHex(0xFF));
 			}
 		}
-		if(debug) {
-			std::cout << "ray hit at:" << glm::to_string(closest.intersectionPoint) << std::endl; 
-		}
 	}
+	if(debug) std::cout << std::endl;
 }
 
 void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {
@@ -740,6 +766,7 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if(event.key.keysym.sym == SDLK_r) {
 			std::cout << "RayTracing" << std::endl;
 			renderMode = RAYTRACING;
+			raytracingRender(window,pairs);
 		}
 		else if(event.key.keysym.sym == SDLK_n) {
 			std::cout << "Wireframe" << std::endl;
@@ -769,7 +796,7 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		//window.savePPM("output.ppm")
 		int x, y;
 		SDL_GetMouseState(&x, &y);
-		std::cout << "x:" << x << " y:" << y << std::endl;
+		std::cout << "ray fired to x:" << x << " y:" << y << std::endl;
 		rayTrace(x,y,window,pairs,true);
 	};
 }

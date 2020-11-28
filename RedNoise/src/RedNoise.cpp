@@ -412,6 +412,25 @@ bool triangleEqual(ModelTriangle triangle1, ModelTriangle triangle2) {
 	return triangle1.vertices[0] == triangle2.vertices[0] && triangle1.vertices[1] == triangle2.vertices[1] && triangle1.vertices[2] == triangle2.vertices[2];
 }
 
+void wireframeRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
+	for(int i=0; i < modelPairs.size(); i++) {
+		ModelTriangle triangle = modelPairs[i].first;
+		Material material = modelPairs[i].second;
+		CanvasTriangle transposedTri = getCanvasTriangle(triangle);
+		drawTriangle(window,transposedTri,material.colour);
+	}
+	CanvasPoint light = getCanvasPoint(lightSource.pos);
+	if(light.x >= 0 && light.x <= WIDTH - 1 && light.y >= 0 && light.y <= HEIGHT - 1) {
+		window.setPixelColour(light.x,light.y,0xFF00FF00);
+	}
+}
+
+void rasterisingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
+	for(int i=0; i < modelPairs.size(); i++) {
+		drawModelTriangle(window, modelPairs[i]);
+	}
+}
+
 bool shadowRay(int u, int v, ModelTriangle triangle, RayTriangleIntersection intersection, glm::vec3 light) {
 	glm::vec3 worldSpaceCanvasPixel = intersection.intersectionPoint;
 	glm::vec3 rayDirection = glm::normalize((light - worldSpaceCanvasPixel));
@@ -469,6 +488,18 @@ glm::vec3 getVertexNormal(ModelTriangle triangle, float u, float v) {
 	return targetNormal;
 }
 
+bool isInShadow(int x, int y, RayTriangleIntersection intersection, glm::vec3 vertexNormal, LightSource lightSource, float shadowBias) {
+	bool shadow = false;
+	for(int i = 0; i < pairs.size(); i++) {
+		ModelTriangle triangle = pairs[i].first;
+		if(shadowRay(x,y,triangle,intersection,vertexNormal,lightSource.pos,shadowBias)) {
+			shadow = true;
+			break;	
+		}
+	}
+	return shadow;
+}
+
 float getProximityBrightness(glm::vec3 target, LightSource light) {
 	float distance = glm::abs(glm::length(light.pos - target));
 	float brightness = 1.0f/(glm::pi<float>()*distance*distance);
@@ -515,24 +546,6 @@ std::vector<RayTriangleIntersection> getReflectedIntersections(std::vector<std::
 }
 
 
-void wireframeRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
-	for(int i=0; i < modelPairs.size(); i++) {
-		ModelTriangle triangle = modelPairs[i].first;
-		Material material = modelPairs[i].second;
-		CanvasTriangle transposedTri = getCanvasTriangle(triangle);
-		drawTriangle(window,transposedTri,material.colour);
-	}
-	CanvasPoint light = getCanvasPoint(lightSource.pos);
-	if(light.x >= 0 && light.x <= WIDTH - 1 && light.y >= 0 && light.y <= HEIGHT - 1) {
-		window.setPixelColour(light.x,light.y,0xFF00FF00);
-	}
-}
-
-void rasterisingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle, Material>> modelPairs) {
-	for(int i=0; i < modelPairs.size(); i++) {
-		drawModelTriangle(window, modelPairs[i]);
-	}
-}
 
 Colour getLightAffectedColour(glm::vec3 targetVertex, ModelTriangle targetTriangle, LightSource lightSource, float ambience, bool shadow, glm::vec3 vertexNormal) {
 	if(!shadow) {
@@ -567,8 +580,9 @@ void renderMirrorReflection(int x, int y, DrawingWindow &window, RayTriangleInte
 				closestReflection = reflections[i];
 			}
 		}
-		//closest.intersectedTriangle.colour = closestReflection.intersectedTriangle.colour;
-		window.setPixelColour(x,y,closestReflection.intersectedTriangle.colour.toHex(0xFF));				
+		bool shadow = isInShadow(x,y,closestReflection,closestReflection.intersectedTriangle.normal,lightSource,0.001f);
+		Colour reflectedColour = getLightAffectedColour(closestReflection.intersectionPoint, closestReflection.intersectedTriangle, lightSource, 0.2f, shadow, closestReflection.intersectedTriangle.normal);
+		window.setPixelColour(x,y,reflectedColour.toHex(0xFF));				
 	}
 }
 
@@ -604,14 +618,7 @@ std::pair<RayTriangleIntersection,bool> rayTrace(int x, int y, DrawingWindow &wi
 		//Get normal of the vertex
 		glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
 		//Check for the shadow
-		bool shadow = false;
-		for(int i = 0; i < pairs.size(); i++) {
-			ModelTriangle triangle = pairs[i].first;
-			if(shadowRay(x,y,triangle,closest,vertexNormal,lightSource.pos,0.001f)) {
-				shadow = true;
-				break;	
-			}
-		}
+		bool shadow = isInShadow(x,y,closest,vertexNormal,lightSource,0.001f);
 
 		float ambience = 0.2f;
 		Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,ambience,shadow,vertexNormal);

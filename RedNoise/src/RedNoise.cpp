@@ -621,8 +621,7 @@ void rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTr
 						std::cout << reflections[i].intersectedTriangle.colour.toHex(0xFF) << std::endl; 
 					}
 				}
-				window.setPixelColour(x,y,closestReflection.intersectedTriangle.colour.toHex(0xFF));
-				return;
+				closest.intersectedTriangle.colour = closestReflection.intersectedTriangle.colour;				
 			}
 		}
 

@@ -38,6 +38,8 @@ LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
 std::vector<LightSource> lightSources;
 uint32_t MIRROR_COLOUR = 0xFFFF00FF;
 uint32_t GLASS_COLOUR = 0xFFFF0000;
+float vaccumRI = 1.0f;
+float glassRI = 1.52f;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -515,6 +517,14 @@ glm::vec3 getVectorOfReflection(glm::vec3 normal, glm::vec3 from) {
 	return glm::normalize(fromDirection - 2.0f*normal*(glm::dot(fromDirection,normal)));
 }
 
+glm::vec3 getVectorOfRefraction(glm::vec3 from, glm::vec3 normal, float n1, float n2) {
+	from = glm::normalize(from);
+	normal = glm::normalize(normal);
+	float r = n1/n2;
+	float c = glm::dot(-normal, from);
+	return r*from + (float)(r*c - glm::sqrt(1.0f - glm::pow(r,2) * (1.0f - glm::pow(c,2)))) * normal;
+}
+
 float getSpecularSpread(glm::vec3 target,glm::vec3 normal ,Camera view, LightSource light, int shininess) {
 	glm::vec3 viewDirection = glm::normalize(view.pos - target);
 	glm::vec3 reflection = getVectorOfReflection(normal,light.pos);
@@ -528,6 +538,20 @@ std::vector<RayTriangleIntersection> getReflectedIntersections(std::vector<std::
 		ModelTriangle triangle = pairs[i].first;
 		if(!triangleEqual(mirrorIntersection.intersectedTriangle,triangle) && triangle.colour.toHex(0xFF) != MIRROR_COLOUR) {
 			glm::vec3 tuv = getPossibleIntersectionSolution(triangle,mirrorIntersection.intersectionPoint,reflectedRay);
+			if(isValidIntersection(tuv)) {
+				intersections.push_back(getRayTriangleIntersection(triangle,tuv));
+			}
+		}
+	}
+	return intersections;
+}
+
+std::vector<RayTriangleIntersection> getRefractedIntersections(std::vector<std::pair<ModelTriangle,Material>> pairs, RayTriangleIntersection firstIntersection , glm::vec3 refractedRay) {
+	std::vector<RayTriangleIntersection> intersections;
+	for(int i = 0; i < pairs.size(); i++) {
+		ModelTriangle triangle = pairs[i].first;
+		if(!triangleEqual(firstIntersection.intersectedTriangle, triangle)) {
+			glm::vec3 tuv = getPossibleIntersectionSolution(triangle,firstIntersection.intersectionPoint,refractedRay);
 			if(isValidIntersection(tuv)) {
 				intersections.push_back(getRayTriangleIntersection(triangle,tuv));
 			}
@@ -593,6 +617,39 @@ void renderMirrorReflection(int x, int y, DrawingWindow &window, RayTriangleInte
 	}
 }
 
+void renderRefraction(int x, int y, DrawingWindow &window, RayTriangleIntersection rayIntersection, std::vector<std::pair<ModelTriangle,Material>> pairs) {
+	//Refraction
+	glm::vec3 rayDirection = rayIntersection.intersectionPoint - camera.pos;
+	glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,rayIntersection.intersectedTriangle.normal,1.0f,1.52f);
+	
+	
+	std::vector<RayTriangleIntersection> refractions = getRefractedIntersections(pairs,rayIntersection,refractedRay);
+	if(refractions.empty()) {
+		//Void colour
+		window.setPixelColour(x,y,0xFF000000);
+		return;
+	}
+	else {
+		RayTriangleIntersection closestRefraction = refractions[0];
+		for(int i = 0; i < refractions.size(); i++) {
+			if(refractions[i].distanceFromCamera < closestRefraction.distanceFromCamera) {
+				closestRefraction = refractions[i];
+			}
+		}
+		//hits glass again
+		if(closestRefraction.intersectedTriangle.isGlass) {
+
+		}
+
+
+		bool refractedShadow = isInShadow(closestRefraction,closestRefraction.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+		Colour refractedColour = getLightAffectedColour(closestRefraction.intersectionPoint, closestRefraction.intersectedTriangle.colour, lightSource, AMBIENCE, refractedShadow, closestRefraction.intersectedTriangle.normal);
+		//bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+		//Colour finalColour = getLightAffectedColour(rayIntersection.intersectionPoint,reflectedColour,lightSource,0.35f,false,rayIntersection.intersectedTriangle.normal);
+		window.setPixelColour(x,y,refractedColour.toHex(0xFF));				
+	}
+}
+
 std::pair<RayTriangleIntersection,bool> rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs, bool debug) {
 	glm::vec3 cameraSpaceCanvasPixel((x - WIDTH/2), (HEIGHT/2 - y), -camera.f*WIDTH);
 	glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
@@ -649,6 +706,15 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 			if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isMirror) {
 				RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
 				renderMirrorReflection(x,y,window,rayIntersection,pairs);
+			}
+		}
+	}
+	//Glass
+	for(int x = 0; x < WIDTH; x++) {
+		for(int y = 0; y < HEIGHT; y++) {
+			if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isGlass) {
+				RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
+				renderRefraction(x,y,window,rayIntersection,pairs);
 			}
 		}
 	}
@@ -854,6 +920,9 @@ int main(int argc, char *argv[]) {
 		cornell_box[i].first.vertexNormals = calcTriangleVertexNormal(cornell_box[i].first, cornell_box);
 		if(cornell_box[i].first.colour.toHex(0xFF) == MIRROR_COLOUR) {
 			cornell_box[i].first.isMirror = true;
+		}
+		if(cornell_box[i].first.colour.toHex(0xFF) == GLASS_COLOUR) {
+			cornell_box[i].first.isGlass = true;
 		}
 	}
 	pairs = cornell_box;

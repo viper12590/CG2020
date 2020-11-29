@@ -35,7 +35,7 @@ glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
 // LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 std::vector<LightSource> lightSources;
-uint32_t MIRROR_COLOUR = 0xFF0000FF;
+uint32_t MIRROR_COLOUR = 0xFFFF00FF;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -524,7 +524,7 @@ std::vector<RayTriangleIntersection> getReflectedIntersections(std::vector<std::
 	std::vector<RayTriangleIntersection> intersections;
 	for(int i = 0; i < pairs.size(); i++) {
 		ModelTriangle triangle = pairs[i].first;
-		if(!triangleEqual(mirrorIntersection.intersectedTriangle,triangle) && triangle.colour.toHex(0xFF) != 0xFF0000FF) {
+		if(!triangleEqual(mirrorIntersection.intersectedTriangle,triangle) && triangle.colour.toHex(0xFF) != MIRROR_COLOUR) {
 			glm::vec3 tuv = getPossibleIntersectionSolution(triangle,mirrorIntersection.intersectionPoint,reflectedRay);
 			if(isValidIntersection(tuv)) {
 				intersections.push_back(getRayTriangleIntersection(triangle,tuv));
@@ -585,8 +585,8 @@ void renderMirrorReflection(int x, int y, DrawingWindow &window, RayTriangleInte
 		}
 		bool reflectedShadow = isInShadow(closestReflection,closestReflection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
 		Colour reflectedColour = getLightAffectedColour(closestReflection.intersectionPoint, closestReflection.intersectedTriangle.colour, lightSource, AMBIENCE, reflectedShadow, closestReflection.intersectedTriangle.normal);
-		bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
-		Colour finalColour = getLightAffectedColour(rayIntersection.intersectionPoint,reflectedColour,lightSource,0.35f,shadow,rayIntersection.intersectedTriangle.normal);
+		//bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+		Colour finalColour = getLightAffectedColour(rayIntersection.intersectionPoint,reflectedColour,lightSource,0.35f,false,rayIntersection.intersectedTriangle.normal);
 		window.setPixelColour(x,y,finalColour.toHex(0xFF));				
 	}
 }
@@ -785,7 +785,7 @@ void draw(DrawingWindow &window) {
 			break;
 	}
 	
-	window.setPixelColour(432,39,0x00FF0000);
+	// window.setPixelColour(432,39,0x00FF0000);
 	
 }
 float theta = glm::acos(camera.pos.x / glm::distance(glm::vec3(0.0), camera.pos));

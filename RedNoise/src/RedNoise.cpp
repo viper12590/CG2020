@@ -454,22 +454,22 @@ std::array<glm::vec3, 3> calcTriangleVertexNormal(ModelTriangle triangle, std::v
 	//For all vertex of the current triangle
 	for(int v = 0; v < 3; v++) {
 		glm::vec3 currentV = triangle.vertices[v];
-		std::vector<ModelTriangle> neighborTriangles;
-		//Check every ModelTriangles and add every neighbors to vector (including self)
+		std::vector<ModelTriangle> neighbourTriangles;
+		//Check every ModelTriangles and add every neighbours to vector (including self)
 		for(int i = 0; i < pairs.size(); i++) {
 			ModelTriangle modelTriagnle = pairs[i].first;
 			if(currentV == modelTriagnle.vertices[0] || currentV == modelTriagnle.vertices[1] || currentV == modelTriagnle.vertices[2]) {
-				neighborTriangles.push_back(modelTriagnle);
+				neighbourTriangles.push_back(modelTriagnle);
 			}
 		}
 
 		glm::vec3 totalNormal(0);
-		for(int j = 0; j < neighborTriangles.size(); j++) {
-			//Add all triangle normal of neighbors (and self)
-			totalNormal += neighborTriangles[j].normal;
+		for(int j = 0; j < neighbourTriangles.size(); j++) {
+			//Add all triangle normal of neighbours (and self)
+			totalNormal += neighbourTriangles[j].normal;
 		}
 		//Take the average
-		totalNormal /= neighborTriangles.size();
+		totalNormal /= neighbourTriangles.size();
 		vertexNormals[v] = glm::normalize(totalNormal);
 	}
 	return vertexNormals;

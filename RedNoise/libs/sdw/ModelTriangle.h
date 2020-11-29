@@ -13,6 +13,7 @@ struct ModelTriangle {
 	glm::vec3 normal{};
 	std::array<glm::vec3, 3> vertexNormals{};
 	bool isMirror = false;
+	bool isGlass = false;
 
 	ModelTriangle();
 	ModelTriangle(const glm::vec3 &v0, const glm::vec3 &v1, const glm::vec3 &v2, Colour trigColour);

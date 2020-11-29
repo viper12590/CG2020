@@ -39,7 +39,7 @@ std::vector<LightSource> lightSources;
 uint32_t MIRROR_COLOUR = 0xFFFF00FF;
 uint32_t GLASS_COLOUR = 0xFFFF0000;
 float vaccumRI = 1.0f;
-float glassRI = 1.52f;
+float glassRI = 1.2f;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);
@@ -470,7 +470,7 @@ std::array<glm::vec3, 3> calcTriangleVertexNormal(ModelTriangle triangle, std::v
 		}
 		//Take the average
 		totalNormal /= neighborTriangles.size();
-		vertexNormals[v] = totalNormal;
+		vertexNormals[v] = glm::normalize(totalNormal);
 	}
 	return vertexNormals;
 }
@@ -521,8 +521,15 @@ glm::vec3 getVectorOfRefraction(glm::vec3 from, glm::vec3 normal, float n1, floa
 	from = glm::normalize(from);
 	normal = glm::normalize(normal);
 	float r = n1/n2;
-	float c = glm::dot(-normal, from);
-	return r*from + (float)(r*c - glm::sqrt(1.0f - glm::pow(r,2) * (1.0f - glm::pow(c,2)))) * normal;
+	float c = glm::dot(normal, from);
+	if(c < 0.0f) {
+		c = glm::dot(-normal, from);
+	}
+	float sine1 = glm::clamp<float>(1.0f - glm::pow(c,2), 0.0f, 1.0f);
+	float sine2 = glm::clamp<float>(1.0f - glm::pow(r,2) * sine1, 0.0f, 1.0f);
+	glm::vec3 refraction = r*from + (float)(r*c - sine2) * normal;
+
+	return refraction;
 }
 
 float getSpecularSpread(glm::vec3 target,glm::vec3 normal ,Camera view, LightSource light, int shininess) {
@@ -620,9 +627,7 @@ void renderMirrorReflection(int x, int y, DrawingWindow &window, RayTriangleInte
 void renderRefraction(int x, int y, DrawingWindow &window, RayTriangleIntersection rayIntersection, std::vector<std::pair<ModelTriangle,Material>> pairs) {
 	//Refraction
 	glm::vec3 rayDirection = rayIntersection.intersectionPoint - camera.pos;
-	glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,rayIntersection.intersectedTriangle.normal,1.0f,1.52f);
-	
-	
+	glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,rayIntersection.intersectedTriangle.normal,vaccumRI,glassRI);
 	std::vector<RayTriangleIntersection> refractions = getRefractedIntersections(pairs,rayIntersection,refractedRay);
 	if(refractions.empty()) {
 		//Void colour
@@ -638,14 +643,22 @@ void renderRefraction(int x, int y, DrawingWindow &window, RayTriangleIntersecti
 		}
 		//hits glass again
 		if(closestRefraction.intersectedTriangle.isGlass) {
-
+			glm::vec3 refractedRay2 = getVectorOfRefraction(refractedRay,closestRefraction.intersectedTriangle.normal,glassRI, vaccumRI);
+			std::vector<RayTriangleIntersection> refractions2 = getRefractedIntersections(pairs,closestRefraction,refractedRay2);
+			if(refractions2.empty()) {
+				//Void colour
+				window.setPixelColour(x,y,0xFF000000);
+				return;
+			}
+			closestRefraction = refractions2[0];
+			for(int i = 0; i < refractions2.size(); i++) {
+				if(refractions2[i].distanceFromCamera < closestRefraction.distanceFromCamera) {
+					closestRefraction = refractions2[i];
+				}
+			}
 		}
-
-
 		bool refractedShadow = isInShadow(closestRefraction,closestRefraction.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
 		Colour refractedColour = getLightAffectedColour(closestRefraction.intersectionPoint, closestRefraction.intersectedTriangle.colour, lightSource, AMBIENCE, refractedShadow, closestRefraction.intersectedTriangle.normal);
-		//bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
-		//Colour finalColour = getLightAffectedColour(rayIntersection.intersectionPoint,reflectedColour,lightSource,0.35f,false,rayIntersection.intersectedTriangle.normal);
 		window.setPixelColour(x,y,refractedColour.toHex(0xFF));				
 	}
 }

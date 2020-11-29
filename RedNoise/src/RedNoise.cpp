@@ -30,6 +30,7 @@ std::vector<std::pair<ModelTriangle, Material>> sphere;
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
+bool simple_animation = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
@@ -725,12 +726,16 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 			std::cout << "look at the center" << std::endl;
 			camera.rot = lookAt(camera.pos, CENTER);
 		}
+		else if(event.key.keysym.sym == SDLK_o) {
+			orbitMode = !orbitMode;
+		}
+		else if(event.key.keysym.sym == SDLK_p) {
+			simple_animation = !simple_animation;
+			std::cout << "simple animation:" << simple_animation << std::endl;
+		}
 		else if(event.key.keysym.sym == SDLK_m) {
 			std::cout << "Rasterizing" << std::endl;
 			renderMode = RASTERIZING;
-		}
-		else if(event.key.keysym.sym == SDLK_o) {
-			orbitMode = !orbitMode;
 		}
 		else if(event.key.keysym.sym == SDLK_r) {
 			std::cout << "RayTracing" << std::endl;
@@ -799,9 +804,23 @@ void orbit() {
 	camera.pos = glm::vec3(newX, camera.pos.y, newZ);
 	camera.rot = lookAt(camera.pos, CENTER);
 }
+
+void simpleAnimation() {
+	for(int i = 0; i < pairs.size(); i++) {
+		if(pairs[i].first.colour.toHex(0xFF) == 0xFF0000FF || pairs[i].first.colour.toHex(0xFF) == 0xFFFF0000) {
+			if(pairs[i].first.vertices[0].y <= 0.38f && pairs[i].first.vertices[1].y <= 0.38f && pairs[i].first.vertices[2].y <= 0.38f) {
+				for(int v = 0; v < 3; v++) {
+					pairs[i].first.vertices[v].y += 0.01f;
+				}
+			}
+		}
+	}
+}
+
 // Function for performing animation (shifting artifacts or moving the camera)
 void update(DrawingWindow &window) {
 	if(orbitMode) orbit();
+	if(simple_animation) simpleAnimation();
 }
 
 

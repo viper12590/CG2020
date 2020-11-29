@@ -915,14 +915,14 @@ int main(int argc, char *argv[]) {
 	// camera.f = 4.0;
 	// camera.pos = glm::vec3(0.0,0.2,4.0);
 	ObjLoader modelLoader = ObjLoader();
-	// sphere = modelLoader.loadObj("sphere.obj", 0.08);
-	// for(int i = 0; i < sphere.size(); i++) {
-	// 	sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
-	// 	std::array<glm::vec3, 3> vertices = sphere[i].first.vertices;
-	// 	for(int j = 0; j < 3; j++) {
-	// 		lightSources.push_back(LightSource(vertices[j],2.0f));
-	// 	}
-	// }
+	sphere = modelLoader.loadObj("sphere.obj", 0.08);
+	for(int i = 0; i < sphere.size(); i++) {
+		sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
+		std::array<glm::vec3, 3> vertices = sphere[i].first.vertices;
+		for(int j = 0; j < 3; j++) {
+			lightSources.push_back(LightSource(vertices[j],2.0f));
+		}
+	}
 
 	cornell_box = modelLoader.loadObj("textured-cornell-box.obj",0.17);
 	for(int i = 0; i < cornell_box.size(); i++) {

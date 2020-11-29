@@ -37,6 +37,7 @@ LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
 // LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 std::vector<LightSource> lightSources;
 uint32_t MIRROR_COLOUR = 0xFFFF00FF;
+uint32_t GLASS_COLOUR = 0xFFFF0000;
 
 std::vector<float> interpolateSingleFloats(float from, float to, int numberOfValues) {
 	std::vector<float> values(numberOfValues);

@@ -626,7 +626,7 @@ void renderMirrorReflection(int x, int y, DrawingWindow &window, RayTriangleInte
 void renderRefraction(int x, int y, DrawingWindow &window, RayTriangleIntersection rayIntersection, std::vector<std::pair<ModelTriangle,Material>> pairs) {
 	//Refraction
 	glm::vec3 rayDirection = rayIntersection.intersectionPoint - camera.pos;
-	glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,rayIntersection.intersectedTriangle.normal,vaccumRI,glassRI);
+	glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,rayIntersection.intersectedTriangle.normal,vaccumRI,rayIntersection.intersectedTriangle.refractiveIndex);
 	std::vector<RayTriangleIntersection> refractions = getRefractedIntersections(pairs,rayIntersection,refractedRay);
 	if(refractions.empty()) {
 		//Void colour
@@ -642,7 +642,7 @@ void renderRefraction(int x, int y, DrawingWindow &window, RayTriangleIntersecti
 		}
 		//hits glass again
 		if(closestRefraction.intersectedTriangle.isGlass) {
-			glm::vec3 refractedRay2 = getVectorOfRefraction(refractedRay,closestRefraction.intersectedTriangle.normal,glassRI, vaccumRI);
+			glm::vec3 refractedRay2 = getVectorOfRefraction(refractedRay, closestRefraction.intersectedTriangle.normal, closestRefraction.intersectedTriangle.refractiveIndex, vaccumRI);
 			std::vector<RayTriangleIntersection> refractions2 = getRefractedIntersections(pairs,closestRefraction,refractedRay2);
 			if(refractions2.empty()) {
 				//Void colour
@@ -935,6 +935,7 @@ int main(int argc, char *argv[]) {
 		}
 		if(cornell_box[i].first.colour.toHex(0xFF) == GLASS_COLOUR) {
 			cornell_box[i].first.isGlass = true;
+			cornell_box[i].first.refractiveIndex = glassRI;
 		}
 	}
 	pairs = cornell_box;

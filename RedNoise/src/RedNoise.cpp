@@ -26,6 +26,7 @@ std::vector<std::vector<float>> ZBuffer;
 std::vector<std::pair<ModelTriangle, Material>> pairs;
 std::vector<std::pair<ModelTriangle, Material>> cornell_box;
 std::vector<std::pair<ModelTriangle, Material>> sphere;
+std::vector<std::pair<ModelTriangle, Material>> logo;
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
@@ -948,6 +949,15 @@ int main(int argc, char *argv[]) {
 			cornell_box[i].first.refractiveIndex = glassRI;
 		}
 	}
+
+	// logo = modelLoader.loadObj("logo.obj",0.17);
+	// for(int i = 0; logo.size(); i++) {
+	// 	logo[i].first.normal = getNormalOfTriangle(logo[i].first);
+	// }
+	// for(int i = 0; i < logo.size(); i++) {
+	// 	logo[i].first.vertexNormals = calcTriangleVertexNormal(logo[i].first, logo);
+	// }
+
 	pairs = cornell_box;
 	// pairs.insert(pairs.end(),sphere.begin(),sphere.end());
 

@@ -74,10 +74,10 @@ std::vector<CanvasPoint> interpolateVector(CanvasPoint from, CanvasPoint to, int
 	for(int i = 0; i < numberOfValues; i++) {
 		glm::vec3 result = glm::vec3(from.x, from.y, from.depth) + (float)i*intervals;
 		//for debugging
-		if(glm::isnan(result.x)) {
-			std::cout << "nan intervals: " << intervals.x << " num: " << numberOfValues << " to.x: "<< to.x << " from.x: " << from.x << std::endl;
-			std::cout << "from.y: " << from.y << " to.y: " << to.y << std::endl;
-		}
+		// if(glm::isnan(result.x)) {
+		// 	std::cout << "nan intervals: " << glm::to_string(intervals) << " num: " << numberOfValues << " to "<< to << " from" << from << std::endl;
+		// 	std::cout << "from.y: " << from.y << " to.y: " << to.y << std::endl;
+		// }
 		values[i] = CanvasPoint(result.x,result.y, result.z);
 	} 		
 
@@ -211,12 +211,23 @@ void drawFilledTriangle(DrawingWindow &window, CanvasTriangle triangle, Colour l
 CanvasPoint calcExtraTexturePoint(std::vector<CanvasPoint> rCanvas, std::vector<CanvasPoint> rTexture) {
 	glm::vec3 cTopToExtra = glm::vec3(rCanvas[3].x, rCanvas[3].y, rCanvas[3].depth) - glm::vec3(rCanvas[0].x, rCanvas[0].y, rCanvas[0].depth);
 	glm::vec3 cTopToBottom = glm::vec3(rCanvas[2].x, rCanvas[2].y, rCanvas[2].depth) - glm::vec3(rCanvas[0].x, rCanvas[0].y, rCanvas[0].depth);
-	glm::vec3 ratio = cTopToExtra / cTopToBottom;
+	float ratioX = cTopToExtra.x/cTopToBottom.x;
+	float ratioY = cTopToExtra.y/cTopToBottom.y;
+	float ratioZ = cTopToExtra.z/cTopToBottom.z;
+	if(glm::isnan(ratioX)) {
+		ratioX = 0.0f;
+	}
+	if(glm::isnan(ratioY)) {
+		ratioY = 0.0f;
+	}
+	if(glm::isnan(ratioZ)) {
+		ratioZ = 0.0f;
+	}
+	glm::vec3 ratio = glm::vec3(ratioX,ratioY,ratioZ);
 	glm::vec3 tTopToBottom = glm::vec3(rTexture[2].x, rTexture[2].y, rTexture[2].depth) - glm::vec3(rTexture[0].x, rTexture[0].y,  rTexture[0].depth);
 	glm::vec3 tTopToExtra = tTopToBottom * ratio;
 
 	//add depth
-
 	return CanvasPoint(rTexture[0].x + tTopToExtra.x, rTexture[0].y + tTopToExtra.y, rTexture[0].depth + tTopToExtra.z);
 }
 
@@ -235,7 +246,7 @@ void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, std::s
 
 	//Getting extra for texture
 	CanvasPoint tExtra = calcExtraTexturePoint(rCanvas, rTexture);
-	if(glm::isnan(rCanvas[1].x)) std::cout << "bad" << std::endl;
+
 	//Interpolate canvas
 	std::vector<CanvasPoint> cTopToMiddleI = interpolateVector(rCanvas[0], rCanvas[1], (int)(rCanvas[1].y- rCanvas[0].y)+1);
 	std::vector<CanvasPoint> cTopToExtraI = interpolateVector(rCanvas[0], rCanvas[3], (int)(rCanvas[3].y - rCanvas[0].y)+1);
@@ -255,7 +266,6 @@ void drawTexturedTriangle(DrawingWindow &window, CanvasTriangle triangle, std::s
 
 		glm::vec3 cSrc(cTopToMiddleI[i].x, cTopToMiddleI[i].y, cTopToMiddleI[i].depth);
 		glm::vec3 cDest(cTopToExtraI[i].x, cTopToExtraI[i].y, cTopToExtraI[i].depth);
-		//if(glm::isnan(cSrc.x)) std::cout << i << std::endl;
 		glm::vec3 tDifference = tDest - tSrc;
 		glm::vec3 cDifference = cDest - cSrc;
 		float numberOfSteps = glm::max(glm::abs(cDifference.x), glm::abs(cDifference.y));

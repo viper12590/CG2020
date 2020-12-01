@@ -31,6 +31,7 @@ enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
 bool simple_animation = false;
+bool record = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
@@ -853,6 +854,10 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 		else if(event.key.keysym.sym == SDLK_t) {
 			lightSource.pos.z += 0.01;
 		}
+		else if(event.key.keysym.sym == SDLK_v) {
+			record = !record;
+			std::cout << "record:" << record << std::endl;
+		}
 	} 
 	else if (event.type == SDL_MOUSEBUTTONDOWN) {
 		window.savePPM("output.ppm");
@@ -905,6 +910,12 @@ void simpleAnimation() {
 			}
 		}
 	}
+}
+
+void saveRender(DrawingWindow &window, int frameNumber) {
+	char buffer[10];
+	sprintf(buffer, "%06d.ppm",frameNumber);
+	window.savePPM(buffer);
 }
 
 // Function for performing animation (shifting artifacts or moving the camera)
@@ -963,6 +974,7 @@ int main(int argc, char *argv[]) {
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;
+	int frame = 0;
 	while (true) {
 		// We MUST poll for events - otherwise the window will freeze !
 		if (window.pollForInputEvents(event)) handleEvent(event, window);
@@ -970,5 +982,7 @@ int main(int argc, char *argv[]) {
 		draw(window);
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();
+		if(record) saveRender(window, frame);
+		frame++;
 	}
 }

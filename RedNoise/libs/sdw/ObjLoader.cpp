@@ -85,12 +85,11 @@ std::vector<std::pair<ModelTriangle,Material>> ObjLoader::loadObj(std::string fi
 			triangle.texturePoints = selectedTexturePoints;
 			triangle.colour = material.colour;
 			triangle.vertexNormals = selectedNormals;
-
-			pairs.push_back(std::pair<ModelTriangle,Material>(triangle,material));
+			pairs.emplace_back(triangle,material);
 		}
 	}
-	
-	file.close();
+
+	file.close();	
 	return pairs;
 }
 

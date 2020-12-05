@@ -26,8 +26,6 @@ std::vector<std::vector<float>> ZBuffer;
 std::vector<std::pair<ModelTriangle, Material>> pairs;
 std::vector<std::pair<ModelTriangle, Material>> cornell_box;
 std::vector<std::pair<ModelTriangle, Material>> sphere;
-std::vector<std::pair<ModelTriangle, Material>> logo;
-std::vector<std::pair<ModelTriangle, Material>> male;
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
@@ -580,15 +578,15 @@ Colour getLightAffectedColour(glm::vec3 targetVertex, ModelTriangle targetTriang
 	return finalColour;
 }
 
-void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from, glm::vec3 rayDirection, std::vector<std::pair<ModelTriangle,Material>> pairs, int recursive) {
+void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from, glm::vec3 rayDirection, std::vector<std::pair<ModelTriangle,Material>>& pairs, int recursive) {
 	if(recursive > 0) {
 		
 		std::vector<RayTriangleIntersection> intersections;
 		std::vector<glm::vec3> tuvVectors;
 
 		//Getting ray intersections
-		for(int i = 0; i < pairs.size(); i++) {
-			ModelTriangle triangle = pairs[i].first;
+		for(std::pair<ModelTriangle,Material>& pair : pairs) {
+			ModelTriangle triangle = pair.first;
 			if((from.intersectedTriangle.isMirror && triangle.isMirror) || (from.intersectedTriangle.isGlass && triangle.isGlass)) {
 				continue;
 			}
@@ -653,7 +651,7 @@ void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from
 }
 
 
-void rayTrace2(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs, int recursive) {
+void rayTrace2(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>>& pairs, int recursive) {
 	if(recursive > 0) {
 		glm::vec3 cameraSpaceCanvasPixel((x - WIDTH/2), (HEIGHT/2 - y), -camera.f*WIDTH);
 		glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
@@ -662,8 +660,8 @@ void rayTrace2(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelT
 		std::vector<glm::vec3> tuvVectors;
 
 		//Getting ray intersections
-		for(int i = 0; i < pairs.size(); i++) {
-			ModelTriangle triangle = pairs[i].first;
+		for(std::pair<ModelTriangle,Material>& pair : pairs) {
+			ModelTriangle triangle = pair.first;
 			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
 			if(isValidIntersection(tuvVector)) {
 				tuvVectors.push_back(tuvVector);
@@ -709,7 +707,7 @@ void rayTrace2(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelT
 	}
 }
 
-void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {
+void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>>& pairs) {
 	for(int x = 0; x < WIDTH; x++) {
 		for(int y = 0; y < HEIGHT; y++) {
 			rayTrace2(x,y,window,pairs,10);

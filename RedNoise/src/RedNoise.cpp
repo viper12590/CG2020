@@ -703,11 +703,22 @@ std::pair<RayTriangleIntersection,bool> rayTrace(int x, int y, DrawingWindow &wi
 		}
 		//Get normal of the vertex
 		glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
-		//Check for the shadow
-		bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
-		Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
-		window.setPixelColour(x,y,finalColour.toHex(0xFF));
 
+		//Check for reflection
+		if(closest.intersectedTriangle.isMirror) {
+			renderMirrorReflection(x,y,window,closest,pairs);
+		}
+		//Check for refraction
+		else if(closest.intersectedTriangle.isGlass) {
+			renderRefraction(x,y,window,closest,pairs);
+		}
+		else {
+			//Check for the shadow
+			bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
+			Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
+			window.setPixelColour(x,y,finalColour.toHex(0xFF));
+		}
+	
 		return std::pair<RayTriangleIntersection,bool>(closest,true);
 	}
 	std::pair<RayTriangleIntersection,bool> noHit;
@@ -723,23 +734,23 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 		}
 	}
 	//Mirror
-	for(int x = 0; x < WIDTH; x++) {
-		for(int y = 0; y < HEIGHT; y++) {
-			if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isMirror) {
-				RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
-				renderMirrorReflection(x,y,window,rayIntersection,pairs);
-			}
-		}
-	}
+	// for(int x = 0; x < WIDTH; x++) {
+	// 	for(int y = 0; y < HEIGHT; y++) {
+	// 		if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isMirror) {
+	// 			RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
+	// 			renderMirrorReflection(x,y,window,rayIntersection,pairs);
+	// 		}
+	// 	}
+	// }
 	//Glass
-	for(int x = 0; x < WIDTH; x++) {
-		for(int y = 0; y < HEIGHT; y++) {
-			if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isGlass) {
-				RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
-				renderRefraction(x,y,window,rayIntersection,pairs);
-			}
-		}
-	}
+	// for(int x = 0; x < WIDTH; x++) {
+	// 	for(int y = 0; y < HEIGHT; y++) {
+	// 		if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isGlass) {
+	// 			RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
+	// 			renderRefraction(x,y,window,rayIntersection,pairs);
+	// 		}
+	// 	}
+	// }
 }
 
 void handleEvent(SDL_Event event, DrawingWindow &window) {

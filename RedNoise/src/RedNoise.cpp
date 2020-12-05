@@ -866,7 +866,7 @@ float theta = glm::acos(camera.pos.x / glm::distance(glm::vec3(0.0), camera.pos)
 void orbit() {
 	float radius = glm::distance(glm::vec3(0.0), camera.pos);
 	float interval = glm::radians(5.0);
-	theta += interval;
+	theta -= interval;
 	float newX = radius*glm::cos(theta);
 	float newZ = radius*glm::sin(theta);
 	camera.pos = glm::vec3(newX, camera.pos.y, newZ);

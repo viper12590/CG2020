@@ -725,7 +725,7 @@ void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from
 		//Getting ray intersections
 		for(int i = 0; i < pairs.size(); i++) {
 			ModelTriangle triangle = pairs[i].first;
-			if(from.intersectedTriangle.isMirror && triangle.isMirror) {
+			if((from.intersectedTriangle.isMirror && triangle.isMirror) || (from.intersectedTriangle.isGlass && triangle.isGlass)) {
 				continue;
 			}
 			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, from.intersectionPoint, rayDirection);
@@ -759,7 +759,10 @@ void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from
 			}
 			//Check for refraction
 			else if(closest.intersectedTriangle.isGlass) {
-
+				//refraction
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,closest.intersectedTriangle.normal,closest.intersectedTriangle.refractiveIndex,vaccumRI);
+				rayTrace3(x,y,window,closest,refractedRay,pairs,recursive-1);
 			}
 			else {
 				if(from.intersectedTriangle.isMirror) {
@@ -768,6 +771,11 @@ void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from
 					//bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
 					Colour finalColour = getLightAffectedColour(from.intersectionPoint,reflectedColour,lightSource,0.35f,false,from.intersectedTriangle.normal);
 					window.setPixelColour(x,y,finalColour.toHex(0xFF));
+				}
+				else if(from.intersectedTriangle.isGlass) {
+					bool refractedShadow = isInShadow(closest,closest.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+					Colour refractedColour = getLightAffectedColour(closest.intersectionPoint, closest.intersectedTriangle.colour, lightSource, AMBIENCE, refractedShadow, closest.intersectedTriangle.normal);
+					window.setPixelColour(x,y,refractedColour.toHex(0xFF));	
 				}
 				else {
 					//Check for the shadow
@@ -821,6 +829,12 @@ void rayTrace2(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelT
 				glm::vec3 reflectedRay = getVectorOfReflection(closest.intersectedTriangle.normal,rayDirection);
 				rayTrace3(x,y,window,closest,reflectedRay,pairs,recursive-1);
 			}
+			else if(closest.intersectedTriangle.isGlass) {
+				//Refraction
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,closest.intersectedTriangle.normal,vaccumRI,closest.intersectedTriangle.refractiveIndex);
+				rayTrace3(x,y,window,closest,refractedRay,pairs,recursive-1);
+			}
 			else {
 				//Check for the shadow
 				bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
@@ -836,7 +850,7 @@ void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle
 	for(int x = 0; x < WIDTH; x++) {
 		for(int y = 0; y < HEIGHT; y++) {
 			//optionalIntersections.push_back(rayTrace(x,y,window,pairs,false));
-			rayTrace2(x,y,window,pairs,7);
+			rayTrace2(x,y,window,pairs,10);
 		}
 	}
 	//Mirror

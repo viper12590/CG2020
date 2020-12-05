@@ -26,8 +26,7 @@ std::vector<std::vector<float>> ZBuffer;
 std::vector<std::pair<ModelTriangle, Material>> pairs;
 std::vector<std::pair<ModelTriangle, Material>> cornell_box;
 std::vector<std::pair<ModelTriangle, Material>> sphere;
-std::vector<std::pair<ModelTriangle, Material>> logo;
-std::vector<std::pair<ModelTriangle, Material>> male;
+int model = 0;
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
@@ -36,7 +35,6 @@ bool record = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
-// LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 std::vector<LightSource> lightSources;
 uint32_t MIRROR_COLOUR = 0xFFFF00FF;
 uint32_t GLASS_COLOUR = 0xFFFF0000;
@@ -76,11 +74,6 @@ std::vector<CanvasPoint> interpolateVector(CanvasPoint from, CanvasPoint to, int
 	glm::vec3 intervals = (glm::vec3(to.x,to.y,to.depth) - glm::vec3(from.x,from.y,from.depth)) / (float)(numberOfValues);
 	for(int i = 0; i < numberOfValues; i++) {
 		glm::vec3 result = glm::vec3(from.x, from.y, from.depth) + (float)i*intervals;
-		//for debugging
-		// if(glm::isnan(result.x)) {
-		// 	std::cout << "nan intervals: " << glm::to_string(intervals) << " num: " << numberOfValues << " to "<< to << " from" << from << std::endl;
-		// 	std::cout << "from.y: " << from.y << " to.y: " << to.y << std::endl;
-		// }
 		values[i] = CanvasPoint(result.x,result.y, result.z);
 	} 		
 
@@ -548,34 +541,6 @@ float getSpecularSpread(glm::vec3 target,glm::vec3 normal ,Camera view, LightSou
 	return spread;
 }
 
-std::vector<RayTriangleIntersection> getReflectedIntersections(std::vector<std::pair<ModelTriangle,Material>> pairs, RayTriangleIntersection mirrorIntersection , glm::vec3 reflectedRay) {
-	std::vector<RayTriangleIntersection> intersections;
-	for(int i = 0; i < pairs.size(); i++) {
-		ModelTriangle triangle = pairs[i].first;
-		if(!triangleEqual(mirrorIntersection.intersectedTriangle,triangle) && triangle.colour.toHex(0xFF) != MIRROR_COLOUR) {
-			glm::vec3 tuv = getPossibleIntersectionSolution(triangle,mirrorIntersection.intersectionPoint,reflectedRay);
-			if(isValidIntersection(tuv)) {
-				intersections.push_back(getRayTriangleIntersection(triangle,tuv));
-			}
-		}
-	}
-	return intersections;
-}
-
-std::vector<RayTriangleIntersection> getRefractedIntersections(std::vector<std::pair<ModelTriangle,Material>> pairs, RayTriangleIntersection firstIntersection , glm::vec3 refractedRay) {
-	std::vector<RayTriangleIntersection> intersections;
-	for(int i = 0; i < pairs.size(); i++) {
-		ModelTriangle triangle = pairs[i].first;
-		if(!triangleEqual(firstIntersection.intersectedTriangle, triangle)) {
-			glm::vec3 tuv = getPossibleIntersectionSolution(triangle,firstIntersection.intersectionPoint,refractedRay);
-			if(isValidIntersection(tuv)) {
-				intersections.push_back(getRayTriangleIntersection(triangle,tuv));
-			}
-		}
-	}
-	return intersections;
-}
-
 Colour getLightAffectedColour(glm::vec3 targetVertex, Colour targetColour, LightSource lightSource, float ambience, bool shadow, glm::vec3 vertexNormal) {
 	if(!shadow) {
 		float brightness = getProximityBrightness(targetVertex,lightSource);
@@ -608,136 +573,139 @@ Colour getLightAffectedColour(glm::vec3 targetVertex, ModelTriangle targetTriang
 	return finalColour;
 }
 
-void renderMirrorReflection(int x, int y, DrawingWindow &window, RayTriangleIntersection rayIntersection, std::vector<std::pair<ModelTriangle,Material>> pairs) {
-	//Mirror reflection
-	glm::vec3 rayDirection = rayIntersection.intersectionPoint - camera.pos;
-	glm::vec3 reflectedRay = getVectorOfReflection(rayIntersection.intersectedTriangle.normal,rayDirection);
-	std::vector<RayTriangleIntersection> reflections = getReflectedIntersections(pairs,rayIntersection,reflectedRay);
-	if(reflections.empty()) {
-		//Void colour
-		window.setPixelColour(x,y,0xFF000000);
-		return;
-	}
-	else {
-		RayTriangleIntersection closestReflection = reflections[0];
-		for(int i = 0; i < reflections.size(); i++) {
-			if(reflections[i].distanceFromCamera < closestReflection.distanceFromCamera) {
-				closestReflection = reflections[i];
-			}
-		}
-		bool reflectedShadow = isInShadow(closestReflection,closestReflection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
-		Colour reflectedColour = getLightAffectedColour(closestReflection.intersectionPoint, closestReflection.intersectedTriangle.colour, lightSource, AMBIENCE, reflectedShadow, closestReflection.intersectedTriangle.normal);
-		//bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
-		Colour finalColour = getLightAffectedColour(rayIntersection.intersectionPoint,reflectedColour,lightSource,0.35f,false,rayIntersection.intersectedTriangle.normal);
-		window.setPixelColour(x,y,finalColour.toHex(0xFF));				
-	}
-}
+void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from, glm::vec3 rayDirection, std::vector<std::pair<ModelTriangle,Material>>& pairs, int recursive) {
+	if(recursive > 0) {
+		
+		std::vector<RayTriangleIntersection> intersections;
+		std::vector<glm::vec3> tuvVectors;
 
-void renderRefraction(int x, int y, DrawingWindow &window, RayTriangleIntersection rayIntersection, std::vector<std::pair<ModelTriangle,Material>> pairs) {
-	//Refraction
-	glm::vec3 rayDirection = rayIntersection.intersectionPoint - camera.pos;
-	glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,rayIntersection.intersectedTriangle.normal,vaccumRI,rayIntersection.intersectedTriangle.refractiveIndex);
-	std::vector<RayTriangleIntersection> refractions = getRefractedIntersections(pairs,rayIntersection,refractedRay);
-	if(refractions.empty()) {
-		//Void colour
-		window.setPixelColour(x,y,0xFF000000);
-		return;
-	}
-	else {
-		RayTriangleIntersection closestRefraction = refractions[0];
-		for(int i = 0; i < refractions.size(); i++) {
-			if(refractions[i].distanceFromCamera < closestRefraction.distanceFromCamera) {
-				closestRefraction = refractions[i];
+		//Getting ray intersections
+		for(std::pair<ModelTriangle,Material>& pair : pairs) {
+			ModelTriangle triangle = pair.first;
+			if((from.intersectedTriangle.isMirror && triangle.isMirror) || (from.intersectedTriangle.isGlass && triangle.isGlass)) {
+				continue;
+			}
+			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, from.intersectionPoint, rayDirection);
+			if(isValidIntersection(tuvVector)) {
+				tuvVectors.push_back(tuvVector);
+				RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
+				intersections.push_back(intersection);
 			}
 		}
-		//hits glass again
-		if(closestRefraction.intersectedTriangle.isGlass) {
-			glm::vec3 refractedRay2 = getVectorOfRefraction(refractedRay, closestRefraction.intersectedTriangle.normal, closestRefraction.intersectedTriangle.refractiveIndex, vaccumRI);
-			std::vector<RayTriangleIntersection> refractions2 = getRefractedIntersections(pairs,closestRefraction,refractedRay2);
-			if(refractions2.empty()) {
-				//Void colour
-				window.setPixelColour(x,y,0xFF000000);
-				return;
+
+		//When ray hit ModelTriangle
+		if(!intersections.empty()) {
+			//Find closest intersection point
+			RayTriangleIntersection closest = intersections[0];
+			glm::vec3 closestTuvVector = tuvVectors[0];
+			for(int i = 0; i < intersections.size(); i++) {
+				if(intersections[i].distanceFromCamera <= closest.distanceFromCamera){
+					closest = intersections[i];
+					closestTuvVector = tuvVectors[i];
+				}
 			}
-			closestRefraction = refractions2[0];
-			for(int i = 0; i < refractions2.size(); i++) {
-				if(refractions2[i].distanceFromCamera < closestRefraction.distanceFromCamera) {
-					closestRefraction = refractions2[i];
+			//Get normal of the vertex
+			glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
+
+			//Check for reflection
+			if(closest.intersectedTriangle.isMirror) {
+				//Mirror reflection
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 reflectedRay = getVectorOfReflection(closest.intersectedTriangle.normal,rayDirection);
+				rayTrace3(x,y,window,closest,reflectedRay,pairs,recursive-1);
+			}
+			//Check for refraction
+			else if(closest.intersectedTriangle.isGlass) {
+				//refraction
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,closest.intersectedTriangle.normal,closest.intersectedTriangle.refractiveIndex,vaccumRI);
+				rayTrace3(x,y,window,closest,refractedRay,pairs,recursive-1);
+			}
+			else {
+				if(from.intersectedTriangle.isMirror) {
+					bool reflectedShadow = isInShadow(closest,closest.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+					Colour reflectedColour = getLightAffectedColour(closest.intersectionPoint, closest.intersectedTriangle.colour, lightSource, AMBIENCE, reflectedShadow, closest.intersectedTriangle.normal);
+					//bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+					Colour finalColour = getLightAffectedColour(from.intersectionPoint,reflectedColour,lightSource,0.35f,false,from.intersectedTriangle.normal);
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));
+				}
+				else if(from.intersectedTriangle.isGlass) {
+					bool refractedShadow = isInShadow(closest,closest.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+					Colour refractedColour = getLightAffectedColour(closest.intersectionPoint, closest.intersectedTriangle.colour, lightSource, AMBIENCE, refractedShadow, closest.intersectedTriangle.normal);
+					window.setPixelColour(x,y,refractedColour.toHex(0xFF));	
+				}
+				else {
+					//Check for the shadow
+					bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
+					Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));	
 				}
 			}
 		}
-		bool refractedShadow = isInShadow(closestRefraction,closestRefraction.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
-		Colour refractedColour = getLightAffectedColour(closestRefraction.intersectionPoint, closestRefraction.intersectedTriangle.colour, lightSource, AMBIENCE, refractedShadow, closestRefraction.intersectedTriangle.normal);
-		window.setPixelColour(x,y,refractedColour.toHex(0xFF));				
 	}
 }
 
-std::pair<RayTriangleIntersection,bool> rayTrace(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs, bool debug) {
-	glm::vec3 cameraSpaceCanvasPixel((x - WIDTH/2), (HEIGHT/2 - y), -camera.f*WIDTH);
-	glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
-	glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
-	std::vector<RayTriangleIntersection> intersections;
-	std::vector<glm::vec3> tuvVectors;
 
-	//Getting ray intersections
-	for(int i = 0; i < pairs.size(); i++) {
-		ModelTriangle triangle = pairs[i].first;
-		glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
-		if(isValidIntersection(tuvVector)) {
-			tuvVectors.push_back(tuvVector);
-			RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
-			intersections.push_back(intersection);
-		}
-	}
+void rayTrace2(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>>& pairs, int recursive) {
+	if(recursive > 0) {
+		glm::vec3 cameraSpaceCanvasPixel((x - WIDTH/2), (HEIGHT/2 - y), -camera.f*WIDTH);
+		glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
+		glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
+		std::vector<RayTriangleIntersection> intersections;
+		std::vector<glm::vec3> tuvVectors;
 
-	//When ray hit ModelTriangle
-	if(!intersections.empty()) {
-		//Find closest intersection point
-		RayTriangleIntersection closest = intersections[0];
-		glm::vec3 closestTuvVector = tuvVectors[0];
-		for(int i = 0; i < intersections.size(); i++) {
-			if(intersections[i].distanceFromCamera <= closest.distanceFromCamera){
-				closest = intersections[i];
-				closestTuvVector = tuvVectors[i];
+		//Getting ray intersections
+		for(std::pair<ModelTriangle,Material>& pair : pairs) {
+			ModelTriangle triangle = pair.first;
+			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
+			if(isValidIntersection(tuvVector)) {
+				tuvVectors.push_back(tuvVector);
+				RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
+				intersections.push_back(intersection);
 			}
 		}
-		//Get normal of the vertex
-		glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
-		//Check for the shadow
-		bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
-		Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
-		window.setPixelColour(x,y,finalColour.toHex(0xFF));
 
-		return std::pair<RayTriangleIntersection,bool>(closest,true);
+		//When ray hit ModelTriangle
+		if(!intersections.empty()) {
+			//Find closest intersection point
+			RayTriangleIntersection closest = intersections[0];
+			glm::vec3 closestTuvVector = tuvVectors[0];
+			for(int i = 0; i < intersections.size(); i++) {
+				if(intersections[i].distanceFromCamera <= closest.distanceFromCamera){
+					closest = intersections[i];
+					closestTuvVector = tuvVectors[i];
+				}
+			}
+			//Get normal of the vertex
+			glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
+			
+			//Check reflection
+			if(closest.intersectedTriangle.isMirror) {
+				//Mirror reflection
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 reflectedRay = getVectorOfReflection(closest.intersectedTriangle.normal,rayDirection);
+				rayTrace3(x,y,window,closest,reflectedRay,pairs,recursive-1);
+			}
+			else if(closest.intersectedTriangle.isGlass) {
+				//Refraction
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,closest.intersectedTriangle.normal,vaccumRI,closest.intersectedTriangle.refractiveIndex);
+				rayTrace3(x,y,window,closest,refractedRay,pairs,recursive-1);
+			}
+			else {
+				//Check for the shadow
+				bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
+				Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
+				window.setPixelColour(x,y,finalColour.toHex(0xFF));
+			}
+		}
 	}
-	std::pair<RayTriangleIntersection,bool> noHit;
-	noHit.second = false;
-	return noHit;
 }
 
-void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {
-	std::vector<std::pair<RayTriangleIntersection,bool>> optionalIntersections;
+void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>>& pairs) {
 	for(int x = 0; x < WIDTH; x++) {
 		for(int y = 0; y < HEIGHT; y++) {
-			optionalIntersections.push_back(rayTrace(x,y,window,pairs,false));
-		}
-	}
-	//Mirror
-	for(int x = 0; x < WIDTH; x++) {
-		for(int y = 0; y < HEIGHT; y++) {
-			if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isMirror) {
-				RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
-				renderMirrorReflection(x,y,window,rayIntersection,pairs);
-			}
-		}
-	}
-	//Glass
-	for(int x = 0; x < WIDTH; x++) {
-		for(int y = 0; y < HEIGHT; y++) {
-			if(optionalIntersections[y + x*HEIGHT].second && optionalIntersections[y + x*HEIGHT].first.intersectedTriangle.isGlass) {
-				RayTriangleIntersection rayIntersection = optionalIntersections[y + x*HEIGHT].first;
-				renderRefraction(x,y,window,rayIntersection,pairs);
-			}
+			rayTrace2(x,y,window,pairs,10);
 		}
 	}
 }
@@ -856,6 +824,27 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 			record = !record;
 			std::cout << "record:" << record << std::endl;
 		}
+		else if(event.key.keysym.sym == SDLK_RETURN) {
+			switch (model) {
+			case 0:
+				lightSource.pos = glm::vec3(-0.1, 0.46, 0.5);
+				lightSource.intensity = 1.0;
+				pairs = sphere;
+				camera.f = 4.0;
+				camera.pos = glm::vec3(0.0,0.2,4.0);
+				model = 1;
+				break;
+			case 1:
+			default:
+				lightSource.pos = glm::vec3(0.0, 0.36, 0.1);
+				lightSource.intensity = 2.0;
+				pairs = cornell_box;
+				camera.f = 2.0;
+				camera.pos = glm::vec3(0.0,0.0,4.0);
+				model = 0;
+				break;
+			}
+		}
 	} 
 	else if (event.type == SDL_MOUSEBUTTONDOWN) {
 		window.savePPM("output.ppm");
@@ -883,15 +872,13 @@ void draw(DrawingWindow &window) {
 			break;
 	}
 	
-	// window.setPixelColour(432,39,0x00FF0000);
-	
 }
 float theta = glm::acos(camera.pos.x / glm::distance(glm::vec3(0.0), camera.pos));
 
 void orbit() {
 	float radius = glm::distance(glm::vec3(0.0), camera.pos);
 	float interval = glm::radians(5.0);
-	theta += interval;
+	theta -= interval;
 	float newX = radius*glm::cos(theta);
 	float newZ = radius*glm::sin(theta);
 	camera.pos = glm::vec3(newX, camera.pos.y, newZ);
@@ -932,16 +919,11 @@ int main(int argc, char *argv[]) {
 			ZBuffer[x][y] = 0.0;
 		}
 	}
-	// camera.f = 4.0;
-	// camera.pos = glm::vec3(0.0,0.2,4.0);
+	
 	ObjLoader modelLoader = ObjLoader();
-	sphere = modelLoader.loadObj("sphere.obj", 0.08);
+	sphere = modelLoader.loadObj("sphere.obj", 0.17);
 	for(int i = 0; i < sphere.size(); i++) {
 		sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
-		std::array<glm::vec3, 3> vertices = sphere[i].first.vertices;
-		for(int j = 0; j < 3; j++) {
-			lightSources.push_back(LightSource(vertices[j],2.0f));
-		}
 	}
 
 	cornell_box = modelLoader.loadObj("textured-cornell-box.obj",0.17);
@@ -960,7 +942,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	pairs = cornell_box;
-	// pairs.insert(pairs.end(),sphere.begin(),sphere.end());
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;

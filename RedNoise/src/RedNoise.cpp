@@ -26,6 +26,7 @@ std::vector<std::vector<float>> ZBuffer;
 std::vector<std::pair<ModelTriangle, Material>> pairs;
 std::vector<std::pair<ModelTriangle, Material>> cornell_box;
 std::vector<std::pair<ModelTriangle, Material>> sphere;
+int model = 0;
 enum RenderMode { WIREFRAME, RASTERIZING, RAYTRACING };
 RenderMode renderMode = WIREFRAME;
 bool orbitMode = false;
@@ -829,6 +830,22 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 			record = !record;
 			std::cout << "record:" << record << std::endl;
 		}
+		else if(event.key.keysym.sym == SDLK_RETURN) {
+			switch (model)
+			{
+			case 1:
+				pairs = sphere;
+				camera.f = 4.0;
+				camera.pos = glm::vec3(0.0,0.2,4.0);
+				model = 0;
+				break;
+			case 0:
+			default:
+				pairs = cornell_box;
+				model = 1;
+				break;
+			}
+		}
 	} 
 	else if (event.type == SDL_MOUSEBUTTONDOWN) {
 		window.savePPM("output.ppm");
@@ -905,10 +922,9 @@ int main(int argc, char *argv[]) {
 			ZBuffer[x][y] = 0.0;
 		}
 	}
-	// camera.f = 4.0;
-	// camera.pos = glm::vec3(0.0,0.2,4.0);
+	
 	ObjLoader modelLoader = ObjLoader();
-	sphere = modelLoader.loadObj("sphere.obj", 0.08);
+	sphere = modelLoader.loadObj("sphere.obj", 0.17);
 	for(int i = 0; i < sphere.size(); i++) {
 		sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
 		std::array<glm::vec3, 3> vertices = sphere[i].first.vertices;

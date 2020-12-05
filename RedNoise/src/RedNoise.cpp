@@ -704,20 +704,10 @@ std::pair<RayTriangleIntersection,bool> rayTrace(int x, int y, DrawingWindow &wi
 		//Get normal of the vertex
 		glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
 
-		//Check for reflection
-		if(closest.intersectedTriangle.isMirror) {
-			renderMirrorReflection(x,y,window,closest,pairs);
-		}
-		//Check for refraction
-		else if(closest.intersectedTriangle.isGlass) {
-			renderRefraction(x,y,window,closest,pairs);
-		}
-		else {
-			//Check for the shadow
-			bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
-			Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
-			window.setPixelColour(x,y,finalColour.toHex(0xFF));
-		}
+		//Check for the shadow
+		bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
+		Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
+		window.setPixelColour(x,y,finalColour.toHex(0xFF));
 	
 		return std::pair<RayTriangleIntersection,bool>(closest,true);
 	}
@@ -726,11 +716,127 @@ std::pair<RayTriangleIntersection,bool> rayTrace(int x, int y, DrawingWindow &wi
 	return noHit;
 }
 
+void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from, glm::vec3 rayDirection, std::vector<std::pair<ModelTriangle,Material>> pairs, int recursive) {
+	if(recursive > 0) {
+		
+		std::vector<RayTriangleIntersection> intersections;
+		std::vector<glm::vec3> tuvVectors;
+
+		//Getting ray intersections
+		for(int i = 0; i < pairs.size(); i++) {
+			ModelTriangle triangle = pairs[i].first;
+			if(from.intersectedTriangle.isMirror && triangle.isMirror) {
+				continue;
+			}
+			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, from.intersectionPoint, rayDirection);
+			if(isValidIntersection(tuvVector)) {
+				tuvVectors.push_back(tuvVector);
+				RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
+				intersections.push_back(intersection);
+			}
+		}
+
+		//When ray hit ModelTriangle
+		if(!intersections.empty()) {
+			//Find closest intersection point
+			RayTriangleIntersection closest = intersections[0];
+			glm::vec3 closestTuvVector = tuvVectors[0];
+			for(int i = 0; i < intersections.size(); i++) {
+				if(intersections[i].distanceFromCamera <= closest.distanceFromCamera){
+					closest = intersections[i];
+					closestTuvVector = tuvVectors[i];
+				}
+			}
+			//Get normal of the vertex
+			glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
+
+			//Check for reflection
+			if(closest.intersectedTriangle.isMirror) {
+				//Mirror reflection
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 reflectedRay = getVectorOfReflection(closest.intersectedTriangle.normal,rayDirection);
+				rayTrace3(x,y,window,closest,reflectedRay,pairs,recursive-1);
+			}
+			//Check for refraction
+			else if(closest.intersectedTriangle.isGlass) {
+
+			}
+			else {
+				if(from.intersectedTriangle.isMirror) {
+					bool reflectedShadow = isInShadow(closest,closest.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+					Colour reflectedColour = getLightAffectedColour(closest.intersectionPoint, closest.intersectedTriangle.colour, lightSource, AMBIENCE, reflectedShadow, closest.intersectedTriangle.normal);
+					//bool shadow = isInShadow(rayIntersection,rayIntersection.intersectedTriangle.normal,lightSource,SHADOW_BIAS);
+					Colour finalColour = getLightAffectedColour(from.intersectionPoint,reflectedColour,lightSource,0.35f,false,from.intersectedTriangle.normal);
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));
+				}
+				else {
+					//Check for the shadow
+					bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
+					Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
+					window.setPixelColour(x,y,finalColour.toHex(0xFF));	
+				}
+			}
+		}
+	}
+}
+
+
+void rayTrace2(int x, int y, DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs, int recursive) {
+	if(recursive > 0) {
+		glm::vec3 cameraSpaceCanvasPixel((x - WIDTH/2), (HEIGHT/2 - y), -camera.f*WIDTH);
+		glm::vec3 worldSpaceCanvasPixel = (cameraSpaceCanvasPixel * camera.rot) + camera.pos;
+		glm::vec3 rayDirection = glm::normalize(worldSpaceCanvasPixel - camera.pos);
+		std::vector<RayTriangleIntersection> intersections;
+		std::vector<glm::vec3> tuvVectors;
+
+		//Getting ray intersections
+		for(int i = 0; i < pairs.size(); i++) {
+			ModelTriangle triangle = pairs[i].first;
+			glm::vec3 tuvVector = getPossibleIntersectionSolution(triangle, camera.pos, rayDirection);
+			if(isValidIntersection(tuvVector)) {
+				tuvVectors.push_back(tuvVector);
+				RayTriangleIntersection intersection = getRayTriangleIntersection(triangle, tuvVector);
+				intersections.push_back(intersection);
+			}
+		}
+
+		//When ray hit ModelTriangle
+		if(!intersections.empty()) {
+			//Find closest intersection point
+			RayTriangleIntersection closest = intersections[0];
+			glm::vec3 closestTuvVector = tuvVectors[0];
+			for(int i = 0; i < intersections.size(); i++) {
+				if(intersections[i].distanceFromCamera <= closest.distanceFromCamera){
+					closest = intersections[i];
+					closestTuvVector = tuvVectors[i];
+				}
+			}
+			//Get normal of the vertex
+			glm::vec3 vertexNormal = getVertexNormal(closest.intersectedTriangle,closestTuvVector[1],closestTuvVector[2]);
+			
+			//Check reflection
+			if(closest.intersectedTriangle.isMirror) {
+				//Mirror reflection
+				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
+				glm::vec3 reflectedRay = getVectorOfReflection(closest.intersectedTriangle.normal,rayDirection);
+				rayTrace3(x,y,window,closest,reflectedRay,pairs,recursive-1);
+			}
+			else {
+				//Check for the shadow
+				bool shadow = isInShadow(closest,vertexNormal,lightSource,SHADOW_BIAS);
+				Colour finalColour = getLightAffectedColour(closest.intersectionPoint,closest.intersectedTriangle,lightSource,AMBIENCE,shadow,vertexNormal);
+				window.setPixelColour(x,y,finalColour.toHex(0xFF));
+			}
+		}
+	}
+}
+
 void raytracingRender(DrawingWindow &window, std::vector<std::pair<ModelTriangle,Material>> pairs) {
-	std::vector<std::pair<RayTriangleIntersection,bool>> optionalIntersections;
+	//std::vector<std::pair<RayTriangleIntersection,bool>> optionalIntersections;
 	for(int x = 0; x < WIDTH; x++) {
 		for(int y = 0; y < HEIGHT; y++) {
-			optionalIntersections.push_back(rayTrace(x,y,window,pairs,false));
+			//optionalIntersections.push_back(rayTrace(x,y,window,pairs,false));
+			rayTrace2(x,y,window,pairs,7);
 		}
 	}
 	//Mirror

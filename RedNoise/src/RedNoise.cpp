@@ -972,7 +972,9 @@ int main(int argc, char *argv[]) {
 		draw(window);
 		// Need to render the frame at the end, or nothing actually gets shown on the screen !
 		window.renderFrame();
-		if(record) saveRender(window, frame);
-		frame++;
+		if(record) {
+			saveRender(window, frame);
+			frame++;
+		}
 	}
 }

@@ -35,7 +35,6 @@ bool record = false;
 Camera camera;
 glm::vec3 CENTER(0.0,0.0,0.0);
 LightSource lightSource(glm::vec3(0.0, 0.36, 0.1),2.0);
-// LightSource lightSource(glm::vec3(-0.1, 0.46, 0.5),1.0);
 std::vector<LightSource> lightSources;
 uint32_t MIRROR_COLOUR = 0xFFFF00FF;
 uint32_t GLASS_COLOUR = 0xFFFF0000;
@@ -75,11 +74,6 @@ std::vector<CanvasPoint> interpolateVector(CanvasPoint from, CanvasPoint to, int
 	glm::vec3 intervals = (glm::vec3(to.x,to.y,to.depth) - glm::vec3(from.x,from.y,from.depth)) / (float)(numberOfValues);
 	for(int i = 0; i < numberOfValues; i++) {
 		glm::vec3 result = glm::vec3(from.x, from.y, from.depth) + (float)i*intervals;
-		//for debugging
-		// if(glm::isnan(result.x)) {
-		// 	std::cout << "nan intervals: " << glm::to_string(intervals) << " num: " << numberOfValues << " to "<< to << " from" << from << std::endl;
-		// 	std::cout << "from.y: " << from.y << " to.y: " << to.y << std::endl;
-		// }
 		values[i] = CanvasPoint(result.x,result.y, result.z);
 	} 		
 
@@ -831,18 +825,23 @@ void handleEvent(SDL_Event event, DrawingWindow &window) {
 			std::cout << "record:" << record << std::endl;
 		}
 		else if(event.key.keysym.sym == SDLK_RETURN) {
-			switch (model)
-			{
-			case 1:
+			switch (model) {
+			case 0:
+				lightSource.pos = glm::vec3(-0.1, 0.46, 0.5);
+				lightSource.intensity = 1.0;
 				pairs = sphere;
 				camera.f = 4.0;
 				camera.pos = glm::vec3(0.0,0.2,4.0);
-				model = 0;
-				break;
-			case 0:
-			default:
-				pairs = cornell_box;
 				model = 1;
+				break;
+			case 1:
+			default:
+				lightSource.pos = glm::vec3(0.0, 0.36, 0.1);
+				lightSource.intensity = 2.0;
+				pairs = cornell_box;
+				camera.f = 2.0;
+				camera.pos = glm::vec3(0.0,0.0,4.0);
+				model = 0;
 				break;
 			}
 		}
@@ -872,8 +871,6 @@ void draw(DrawingWindow &window) {
 		default:
 			break;
 	}
-	
-	// window.setPixelColour(432,39,0x00FF0000);
 	
 }
 float theta = glm::acos(camera.pos.x / glm::distance(glm::vec3(0.0), camera.pos));
@@ -927,10 +924,6 @@ int main(int argc, char *argv[]) {
 	sphere = modelLoader.loadObj("sphere.obj", 0.17);
 	for(int i = 0; i < sphere.size(); i++) {
 		sphere[i].first.normal = getNormalOfTriangle(sphere[i].first);
-		std::array<glm::vec3, 3> vertices = sphere[i].first.vertices;
-		for(int j = 0; j < 3; j++) {
-			lightSources.push_back(LightSource(vertices[j],2.0f));
-		}
 	}
 
 	cornell_box = modelLoader.loadObj("textured-cornell-box.obj",0.17);
@@ -949,7 +942,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	pairs = cornell_box;
-	// pairs.insert(pairs.end(),sphere.begin(),sphere.end());
 
 	DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 	SDL_Event event;

@@ -16,9 +16,11 @@
 #include "ObjLoader.h"
 #include "Camera.h"
 #include "LightSource.h"
+#include <sstream>
+#include <iomanip>
 
-#define WIDTH 600
-#define HEIGHT 400
+#define WIDTH 640
+#define HEIGHT 480
 #define AMBIENCE 0.2f
 #define SHADOW_BIAS 0.001f
 
@@ -898,9 +900,9 @@ void simpleAnimation() {
 }
 
 void saveRender(DrawingWindow &window, int frameNumber) {
-	char buffer[10];
-	sprintf(buffer, "%06d.ppm",frameNumber);
-	window.savePPM(buffer);
+	std::stringstream ss;
+	ss << std::setw(10) << std::setfill('0') << frameNumber << ".ppm";
+	window.savePPM(ss.str());
 }
 
 // Function for performing animation (shifting artifacts or moving the camera)

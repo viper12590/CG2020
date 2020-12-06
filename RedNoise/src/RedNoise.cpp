@@ -620,7 +620,13 @@ void rayTrace3(int x, int y, DrawingWindow &window, RayTriangleIntersection from
 			else if(closest.intersectedTriangle.isGlass) {
 				//refraction
 				glm::vec3 rayDirection = closest.intersectionPoint - camera.pos;
-				glm::vec3 refractedRay = getVectorOfRefraction(rayDirection,closest.intersectedTriangle.normal,closest.intersectedTriangle.refractiveIndex,vaccumRI);
+				glm::vec3 refractedRay;
+				if(from.intersectedTriangle.isGlass) {
+					refractedRay = getVectorOfRefraction(rayDirection,closest.intersectedTriangle.normal,closest.intersectedTriangle.refractiveIndex,vaccumRI);
+				}
+				else {
+					refractedRay = getVectorOfRefraction(rayDirection,closest.intersectedTriangle.normal,vaccumRI,closest.intersectedTriangle.refractiveIndex);
+				}
 				rayTrace3(x,y,window,closest,refractedRay,pairs,recursive-1);
 			}
 			else {
